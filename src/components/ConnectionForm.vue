@@ -24,7 +24,7 @@
             <p v-if="error && submitting" class="error-message">
                 You must fill all fields.
             </p>
-            <button>Connect!</button>
+            <b-button type="submit" variant="light">Connect!</b-button>
         </form>
     </div>
 </template>
