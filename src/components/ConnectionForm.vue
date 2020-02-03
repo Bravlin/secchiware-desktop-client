@@ -1,31 +1,48 @@
 <template>
-    <div id="connection-form">
-        <h2>Connect to a Command and Control server</h2>
-        <form @submit.prevent="handleSubmit">
-            <div>
-                <label>URL</label>
-                <input
+    <div id="connection-form" class="row justify-content-center p-3">
+        <h2 class="col-12">Connect to a Command and Control server:</h2>
+        <b-form 
+            @submit.prevent="handleSubmit"
+            class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3 row justify-content-center"
+        >
+            <b-form-group
+                id="c2-url-fieldset"
+                label="URL"
+                label-for="c2-url"
+                label-cols="4"
+                label-align="right"
+                class="col-12 mt-3"
+            >
+                <b-form-input
+                    id="c2-url"
                     type="url"
                     v-model="c2.url"
                     placeholder="http://127.0.0.1/5000"
                     @focus="clearStatus"
                     @keypress="clearStatus"
-                />
-            </div>
-            <div>
-                <label>Password</label>
-                <input
+                ></b-form-input>
+            </b-form-group>
+            <b-form-group
+                id="c2-password-fieldset"
+                label="Password"
+                label-for="c2-password"
+                label-cols="4"
+                label-align="right"
+                class="col-12 mt-3"
+            >
+                <b-form-input
+                    id="c2-password"
                     type="password"
                     v-model="c2.password"
                     @focus="clearStatus"
                     @keypress="clearStatus"
-                />
-            </div>
-            <p v-if="error && submitting" class="error-message">
-                You must fill all fields.
-            </p>
-            <b-button type="submit" variant="light">Connect!</b-button>
-        </form>
+                ></b-form-input>
+            </b-form-group>
+            <b-alert v-model="error" variant="danger" dismissible class="col-12 mt-3">
+                {{ this.errorMessage }}
+            </b-alert>
+            <b-button type="submit" variant="light" class="my-3">Connect!</b-button>
+        </b-form>
     </div>
 </template>
 
@@ -38,6 +55,7 @@ export default {
             submitting: false,
             error: false,
             success: false,
+            errorMessage: '',
             c2: {
                 url: '',
                 password: ''
@@ -50,18 +68,28 @@ export default {
             this.submitting = true;
             this.clearStatus();
 
-            if (this.invalidURL || this.invalidPassword)
+            if (this.invalidURL || this.invalidPassword) {
                 this.error = true;
+                this.errorMessage = 'You must fill all fields.';
+            }
             else {
-                this.error = false
-                this.success = true
-                this.submitting = false
+                fetch(this.c2.url + '/environments')
+                .then(() => {
+                    this.error = false;
+                    this.success = true;
+                    this.submitting = false;
+                })
+                .catch(error => {
+                    this.error = true;
+                    this.errorMessage = error.message;
+                });
             }
         },
 
         clearStatus() {
-            this.success = false
-            this.error = false
+            this.success = false;
+            this.error = false;
+            this.errorMessage = '';
         }
     },
 
@@ -79,22 +107,7 @@ export default {
 
 <style scoped>
 #connection-form {
-    padding: 1em;
     background-color: #424242;
     color: white;
-}
-
-input {
-    margin-left: 1em;
-}
-
-label {
-    display: inline-block;
-    width: 100px;
-    text-align: right;
-}
-
-.error-message {
-    color: #d33c40;
 }
 </style>

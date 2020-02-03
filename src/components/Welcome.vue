@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="container-fluid">
         <img alt="Secchiware logo" src="../assets/secchiware_logo.png">
-        <h1>Welcome to Secchiware Desktop Client!</h1>
+        <h1 class="my-5">Welcome to Secchiware Desktop Client!</h1>
         <ConnectionForm />
     </div>
 </template>
