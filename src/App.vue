@@ -1,16 +1,32 @@
 <template>
   <div id="app" class="d-flex flex-column">
-    <Welcome />
+    <Layout v-if="c2" />
+    <Welcome v-else @connected="newConnection" />
   </div>
 </template>
 
 <script>
+import Layout from './components/Layout.vue'
 import Welcome from './components/Welcome.vue'
 
 export default {
   name: 'app',
+
   components: {
-    Welcome
+    Layout,
+    Welcome,
+  },
+
+  data() {
+    return {
+      c2: null
+    }
+  },
+
+  methods: {
+    newConnection(c2) {
+      this.c2 = c2;
+    }
   }
 }
 </script>

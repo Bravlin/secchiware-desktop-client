@@ -52,9 +52,7 @@ export default {
 
     data() {
         return {
-            submitting: false,
             error: false,
-            success: false,
             errorMessage: '',
             c2: {
                 url: '',
@@ -76,8 +74,7 @@ export default {
                 fetch(this.c2.url + '/environments')
                 .then(() => {
                     this.error = false;
-                    this.success = true;
-                    this.submitting = false;
+                    this.$emit('connected', this.c2);
                 })
                 .catch(error => {
                     this.error = true;
@@ -87,7 +84,6 @@ export default {
         },
 
         clearStatus() {
-            this.success = false;
             this.error = false;
             this.errorMessage = '';
         }
