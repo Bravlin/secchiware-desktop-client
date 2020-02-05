@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Layout v-if="c2" />
+    <Layout v-if="c2" :c2="c2"/>
     <Welcome v-else @connected="newConnection" />
   </div>
 </template>

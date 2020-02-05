@@ -72,10 +72,18 @@ export default {
                 this.errorMessage = 'You must fill all fields.';
             }
             else {
-                fetch(this.c2.url + '/environments')
-                .then(() => {
-                    this.error = false;
-                    this.$emit('connected', this.c2);
+                fetch(this.c2.url)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.hasOwnProperty('success')) {
+                        this.error = true;
+                        this.errorMessage = 
+                            'No Command and Control server found at the specified URL.';
+                    } else if (!data.success) {
+                        this.error = true;
+                        this.errorMessage = 'Something went wrong at the server.';
+                    } else
+                        this.$emit('connected', this.c2);
                 })
                 .catch(error => {
                     this.error = true;
