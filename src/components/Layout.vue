@@ -1,11 +1,30 @@
 <template>
-    <div class="container-fluid">
-        <div class="row">
-            <b-nav vertical pills class="col-1">
-                <b-nav-item activate>Place</b-nav-item>
-                <b-nav-item>Place</b-nav-item>
-                <b-nav-item>Place</b-nav-item>
-            </b-nav>
+    <div id="layout" class="d-flex">
+        <div id="navbar" class="d-flex flex-column">
+            <div>Placeh</div>
+            <div>Placeh</div>
+            <div class="mt-auto">Placeh</div>
         </div>
+        <b-container id="main-content" fluid></b-container>
     </div>
 </template>
+
+<script>
+export default {
+    name: 'layout'
+}
+</script>
+
+<style scoped>
+#layout {
+  height: 100vh;
+}
+
+#navbar {
+    width: 100px;
+}
+
+#main-content {
+    background-color: #424242;
+}
+</style>
