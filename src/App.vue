@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="d-flex flex-column">
+  <div id="app">
     <Layout v-if="c2" />
     <Welcome v-else @connected="newConnection" />
   </div>
