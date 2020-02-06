@@ -2,7 +2,7 @@
     <b-container fluid class="pt-5 px-0">
         <img alt="Secchiware logo" src="../assets/secchiware_logo.png">
         <h1 class="my-5 mx-auto">Welcome to Secchiware Desktop Client!</h1>
-        <ConnectionForm @connected="propagateConnection" />
+        <connection-form @connected="propagateConnection" />
     </b-container>
 </template>
 

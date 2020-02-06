@@ -11,13 +11,20 @@
                     Number of available test packages: {{ availablePackagesCount }}
                 </b-card-text>
             </b-card>
+            <test-packages :availablePackages="availablePackages" class="mx-auto" />
         </div>
     </div>
 </template>
 
 <script>
+import TestPackages from './components/TestPackages.vue';
+
 export default {
     name: 'command-control-panel',
+
+    components: {
+        TestPackages
+    },
 
     props: {
         c2: {
