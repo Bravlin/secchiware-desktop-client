@@ -1,17 +1,25 @@
 <template>
     <div id="layout" class="d-flex">
         <div id="navbar" class="d-flex flex-column">
-            <div class="py-1 navbar-button" @click="changePanel('command-control-panel')">
-                <b-icon-cloud-fill class="navbar-icon"></b-icon-cloud-fill>
+            <div
+                class="py-1 navbar-button"
+                :class="{active: currentPanel == 'command-control-panel'}"
+                @click="changePanel('command-control-panel')"
+            >
+                <b-icon-cloud-fill class="navbar-icon" />
             </div>
             <div class="py-1 navbar-button">
-                <b-icon-laptop class="navbar-icon"></b-icon-laptop>
+                <b-icon-laptop class="navbar-icon" />
             </div>
             <div class="py-1 navbar-button">
-                <b-icon-documents class="navbar-icon"></b-icon-documents>
+                <b-icon-documents class="navbar-icon" />
             </div>
-            <div class="py-1 navbar-button mt-auto" @click="changePanel('connection-form')">
-                <b-icon-gear-fill class="navbar-icon"></b-icon-gear-fill>
+            <div 
+                class="py-1 navbar-button mt-auto"
+                :class="{active: currentPanel == 'connection-form'}"
+                @click="changePanel('connection-form')"
+            >
+                <b-icon-gear-fill class="navbar-icon" />
             </div>
         </div>
         <component
@@ -20,7 +28,7 @@
             v-bind="panelProps"
             v-on="panelEvents"
             class="main-content flex-grow-1"
-        ></component>
+        />
     </div>
 </template>
 
@@ -137,6 +145,11 @@ export default {
 #navbar .navbar-button:hover {
     color:gray;
     cursor: -webkit-grabbing;
+}
+
+#navbar .active {
+    color: gray;
+    box-shadow: 5px 0px grey inset;
 }
 
 #navbar .navbar-icon {

@@ -14,7 +14,8 @@
                         </b-form-radio>
                     </b-form-group>
                 </b-tab>
-                <b-tab v-if="selected" title="Sub">
+                <b-tab v-if="selected" title="Details">
+                    <package-expansion :pack="selected"></package-expansion>
                 </b-tab>
             </b-tabs>
         </b-card>
@@ -22,8 +23,14 @@
 </template>
 
 <script>
+import PackageExpansion from './PackageExpansion.vue';
+
 export default {
     name: 'test-packages',
+
+    components: {
+        PackageExpansion
+    },
     
     data() {
         return {
