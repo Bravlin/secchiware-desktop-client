@@ -1,6 +1,6 @@
 <template>
     <div class="p-5">
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
             <b-card title="General information" align="left" class="mx-auto">
                 <b-card-text>URL: {{ c2.url }}</b-card-text>
                 <b-card-text>Connected since: {{ formattedSessionStart }}</b-card-text>

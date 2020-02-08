@@ -8,7 +8,11 @@
             >
                 <b-icon-cloud-fill class="navbar-icon" />
             </div>
-            <div class="py-1 navbar-button">
+            <div 
+                class="py-1 navbar-button"
+                :class="{active: currentPanel == 'environments-panel'}"
+                @click="changePanel('environments-panel')"
+            >
                 <b-icon-laptop class="navbar-icon" />
             </div>
             <div class="py-1 navbar-button">
@@ -34,6 +38,7 @@
 
 <script>
 import CommandControlPanel from './view_panels/CommandControlPanel.vue';
+import EnvironmentsPanel from './view_panels/EnvironmentsPanel.vue';
 import ConnectionForm from './ConnectionForm.vue';
 
 export default {
@@ -41,6 +46,7 @@ export default {
 
     components: {
         CommandControlPanel,
+        EnvironmentsPanel,
         ConnectionForm
     },
 
@@ -88,6 +94,8 @@ export default {
             switch (this.currentPanel) {
                 case 'command-control-panel':
                     return this.environments && this.availablePackages;
+                case 'environments-panel':
+                    return this.environments != null;
                 default:
                     return true;
             }
@@ -101,6 +109,10 @@ export default {
                         sessionStart: this.sessionStart,
                         environments: this.environments,
                         availablePackages: this.availablePackages
+                    };
+                case 'environments-panel':
+                    return {
+                        envs: this.environments
                     };
                 default:
                     return null;

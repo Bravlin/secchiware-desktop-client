@@ -3,16 +3,14 @@
         <b-card no-body>
             <b-tabs card>
                 <b-tab title="Root" active>
-                    <b-form-group>
-                        <b-form-radio
-                            v-for="pack in availablePackages"
-                            :key="pack.name"
-                            v-model="selected"
-                            :value="pack"
-                        >
-                            {{ pack.name }}
-                        </b-form-radio>
-                    </b-form-group>
+                    <b-form-radio
+                        v-for="pack in availablePackages"
+                        :key="pack.name"
+                        v-model="selected"
+                        :value="pack"
+                    >
+                        {{ pack.name }}
+                    </b-form-radio>
                 </b-tab>
                 <b-tab v-if="selected" title="Details">
                     <package-expansion :pack="selected"></package-expansion>
