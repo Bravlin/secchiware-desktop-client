@@ -11,7 +11,7 @@
                     Number of available test packages: {{ availablePackagesCount }}
                 </b-card-text>
             </b-card>
-            <test-packages :availablePackages="availablePackages" class="mx-auto" />
+            <test-packages :packages="availablePackages" class="mx-auto" />
         </div>
     </div>
 </template>

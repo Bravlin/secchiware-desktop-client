@@ -11,9 +11,10 @@
             <div class="clickable" @click="toggleSubpackages">Subpackages</div>
             <template v-if="subpackagesVisible">
                 <package-expansion 
+                    v-for="p in pack.subpackages"
                     :key="p.name"
                     :pack="p"
-                    class="pl-4" v-for="p in pack.subpackages"
+                    class="pl-4"
                 />
             </template>
         </template>

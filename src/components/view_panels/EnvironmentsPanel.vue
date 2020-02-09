@@ -3,18 +3,13 @@
         <b-row style="height: 100%">
             <b-col id="environments-list" cols="4" md="3" lg="2">
                 <h5>Registered environments</h5>
-                <div v-for="(ports, ip) in envs" :key="ip">
-                    <b-form-radio 
-                        v-for="(env, port) in ports"
-                        :key="ip + ':' + port"
-                        v-model="selectedEnv"
-                        :value="{ip: ip, port: port, ...env}"
-                    >
-                        {{ ip + ':' + port }}
-                    </b-form-radio>
-                </div>
+                <b-form-radio-group
+                    v-model="selectedEnv"
+                    :options="environmentsListOptions"
+                    stacked
+                />
             </b-col>
-            <b-col cols="8" md="9" lg="10">
+            <b-col cols="8" md="9" lg="10" class="p-5">
                 <b-card 
                     v-if="selectedEnv"
                     title="Environment information"
@@ -65,28 +60,54 @@
                         </b-card-text>
                     </template>
                 </b-card>
+                <test-packages v-if="installedPackages" :packages="installedPackages" />
             </b-col>
         </b-row>
     </b-container>
 </template>
 
 <script>
+import TestPackages from './components/TestPackages.vue';
+
 export default {
     name: 'environments-panel',
+
+    components: {
+        TestPackages
+    },
 
     data() {
         return {
             selectedEnv: null,
             hardwareVisible: false,
             osVisible: false,
-            pythonVisible: false
+            pythonVisible: false,
+            installedPackages: null
         };
     },
 
     props: {
+        c2: {
+            type: Object,
+            required: true,
+        },
         envs: {
             type: Object,
             required: true
+        }
+    },
+
+    watch: {
+        selectedEnv: function (env) {
+            this.installedPackages = [];
+
+            let ip = env.ip;
+            let port = env.port;
+            fetch(`${this.c2.url}/environments/${ip}/${port}/installed`)
+            .then(response => response.json())
+            .then(data => {
+                this.installedPackages = data;
+            });
         }
     },
 
@@ -101,6 +122,19 @@ export default {
 
         togglePython() {
             this.pythonVisible = !this.pythonVisible;
+        }
+    },
+
+    computed: {
+        environmentsListOptions() {
+            let options = [];
+            for (const [ip, ports] of Object.entries(this.envs))
+                for (const [port, info] of Object.entries(ports))
+                    options.push({
+                        text: ip + ':' + port,
+                        value: {ip: ip, port: port, ...info}
+                    });
+            return options;
         }
     }
 };

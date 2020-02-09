@@ -112,6 +112,7 @@ export default {
                     };
                 case 'environments-panel':
                     return {
+                        c2: this.c2,
                         envs: this.environments
                     };
                 default:

@@ -3,17 +3,10 @@
         <b-card no-body>
             <b-tabs card>
                 <b-tab title="Root" active>
-                    <b-form-radio
-                        v-for="pack in availablePackages"
-                        :key="pack.name"
-                        v-model="selected"
-                        :value="pack"
-                    >
-                        {{ pack.name }}
-                    </b-form-radio>
+                    <b-form-radio-group v-model="selected" :options="rootOptions" stacked />
                 </b-tab>
                 <b-tab v-if="selected" title="Details">
-                    <package-expansion :pack="selected"></package-expansion>
+                    <package-expansion :pack="selected" />
                 </b-tab>
             </b-tabs>
         </b-card>
@@ -37,9 +30,19 @@ export default {
     },
 
     props: {
-        availablePackages: {
+        packages: {
             type: Array,
             required: true
+        }
+    },
+
+    computed: {
+        rootOptions() {
+            let options = [];
+            this.packages.forEach(pack => {
+                options.push({text: pack.name, value: pack});
+            });
+            return options;
         }
     }
 };
