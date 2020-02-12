@@ -61,6 +61,12 @@
                     </template>
                 </b-card>
                 <test-packages v-if="installedPackages" :packages="installedPackages" />
+                <reports
+                    v-if="selectedEnv"
+                    :c2URL="c2.url"
+                    :ip="selectedEnv.ip"
+                    :port="selectedEnv.port"
+                />
             </b-col>
         </b-row>
     </b-container>
@@ -68,12 +74,14 @@
 
 <script>
 import TestPackages from './components/TestPackages.vue';
+import Reports from './components/Reports.vue'
 
 export default {
     name: 'environments-panel',
 
     components: {
-        TestPackages
+        TestPackages,
+        Reports
     },
 
     data() {

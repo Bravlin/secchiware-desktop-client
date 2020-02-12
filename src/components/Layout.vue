@@ -32,6 +32,7 @@
             v-bind="panelProps"
             v-on="panelEvents"
             class="main-content flex-grow-1"
+            style="overflow: auto"
         />
     </div>
 </template>
