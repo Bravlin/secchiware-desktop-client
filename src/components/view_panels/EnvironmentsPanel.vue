@@ -106,16 +106,17 @@ export default {
     },
 
     watch: {
-        selectedEnv: function (env) {
+        selectedEnv: async function (env) {
             this.installedPackages = [];
 
             let ip = env.ip;
             let port = env.port;
-            fetch(`${this.c2.url}/environments/${ip}/${port}/installed`)
-            .then(response => response.json())
-            .then(data => {
-                this.installedPackages = data;
-            });
+            try {
+                let response = await fetch(`${this.c2.url}/environments/${ip}/${port}/installed`);
+                this.installedPackages = await response.json();
+            } catch (err) {
+                alert("Something went wrong when trying to recover the environment's installed tests.");
+            }
         }
     },
 

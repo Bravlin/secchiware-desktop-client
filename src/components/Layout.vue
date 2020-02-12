@@ -72,21 +72,29 @@ export default {
             this.currentPanel = panel;
         },
 
+        async setEnvironments() {
+            try {
+                let response = await fetch(this.c2.url + '/environments');
+                this.environments = await response.json();
+            } catch (err) {
+                alert("Something went wrong when trying to recover the environments connected to the Command and Control server.");
+            }
+        },
+
+        async setAvailablePackages() {
+            try {
+                let response = await fetch(this.c2.url + '/test_sets');
+                this.availablePackages = await response.json();
+            } catch (err) {
+                alert("Something went wrong when trying to recover the tests available at the Command and Control server.");
+            }
+        },
+
         newConnection(c2) {
             this.c2 = c2;
             this.sessionStart = new Date(),
-
-            fetch(this.c2.url + '/test_sets')
-            .then(response => response.json())
-            .then(data => {
-                this.availablePackages = data;
-            });
-
-            fetch(this.c2.url + '/environments')
-            .then(response => response.json())
-            .then(data => {
-                this.environments = data;
-            });
+            this.setAvailablePackages();
+            this.setEnvironments();
         }
     },
 
@@ -132,17 +140,8 @@ export default {
     },
 
     created() {
-        fetch(this.c2.url + '/test_sets')
-        .then(response => response.json())
-        .then(data => {
-            this.availablePackages = data;
-        });
-
-        fetch(this.c2.url + '/environments')
-        .then(response => response.json())
-        .then(data => {
-            this.environments = data;
-        });
+        this.setEnvironments();
+        this.setAvailablePackages();
     }
 };
 </script>

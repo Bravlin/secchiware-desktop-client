@@ -54,8 +54,13 @@ export default {
 
     methods: {
         async getReports() {
-            let response = await fetch(`${this.c2URL}/environments/${this.ip}/${this.port}/report`);
-            this.reports = await response.json();
+            try {
+                let response = 
+                    await fetch(`${this.c2URL}/environments/${this.ip}/${this.port}/report`);
+                this.reports = await response.json();
+            } catch (err) {
+                alert("Something went wrong when trying to recover the tests' reports.");
+            }
         },
 
         fieldFormatter(field) {
