@@ -1,7 +1,7 @@
 <template>
     <div class="p-5">
-        <div class="d-flex align-items-center">
-            <b-card title="General information" align="left" class="mx-auto">
+        <b-card-group columns>
+            <b-card title="General information" align="left">
                 <b-card-text>URL: {{ c2.url }}</b-card-text>
                 <b-card-text>Connected since: {{ formattedSessionStart }}</b-card-text>
                 <b-card-text>
@@ -11,8 +11,8 @@
                     Number of available test packages: {{ availablePackagesCount }}
                 </b-card-text>
             </b-card>
-            <test-packages :packages="availablePackages" class="mx-auto" />
-        </div>
+            <test-packages :packages="availablePackages" />
+        </b-card-group>
     </div>
 </template>
 
@@ -65,3 +65,17 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+@media (min-width: 576px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-columns {
+        column-count: 2;
+    }
+}
+</style>
