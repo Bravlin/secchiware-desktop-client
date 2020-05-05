@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>Name: {{ testSet.name }}</div>
-        <template v-if="testSet.tests.length > 0">
+        <template v-if="testSet.tests">
             <div class="clickable" @click="toggleTests">Tests</div>
             <template v-if="testsVisible">
                 <div v-for="t in testSet.tests" :key="t" class="pl-4">{{ t }}</div>
@@ -38,6 +38,6 @@ export default {
 <style scoped>
 .clickable:hover {
     color: grey;
-    cursor: -webkit-grabbing;
+    cursor: pointer;
 }
 </style>

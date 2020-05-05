@@ -2,8 +2,7 @@
     <div class="p-5">
         <b-card-group columns>
             <b-card title="General information" align="left">
-                <b-card-text>URL: {{ c2.url }}</b-card-text>
-                <b-card-text>Connected since: {{ formattedSessionStart }}</b-card-text>
+                <b-card-text>URL: {{ c2URL }}</b-card-text>
                 <b-card-text>
                     Number of currently connected environments: {{ environmentsCount }}
                 </b-card-text>
@@ -23,16 +22,12 @@ export default {
     name: 'command-control-panel',
 
     components: {
-        TestPackages
+        'test-packages': TestPackages
     },
 
     props: {
-        c2: {
-            type: Object,
-            required: true
-        },
-        sessionStart: {
-            type: Date,
+        c2URL: {
+            type: String,
             required: true
         },
         environments: {
@@ -46,12 +41,6 @@ export default {
     },
 
     computed: {
-        formattedSessionStart() {
-            let date = this.sessionStart;
-            return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
-                + ` ${date.getHours()}:${date.getMinutes()}`;
-        },
-
         availablePackagesCount() {
             return this.availablePackages.length;
         },

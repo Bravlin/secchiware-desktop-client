@@ -1,16 +1,17 @@
 <template>
     <b-card title="Environment information" align="left">
         <b-card-text>URL: {{ env.ip + ':' + env.port }}</b-card-text>
+        <b-card-text>Session ID: {{ env.session_id }}</b-card-text>
         <b-card-text>Session start: {{ env.session_start }}</b-card-text>
-        <b-card-text>Platform: {{ env.info.platform }}</b-card-text>
-        <b-card-text>Host name: {{ env.info.node }}</b-card-text>
+        <b-card-text>Platform: {{ envPlatform.platform }}</b-card-text>
+        <b-card-text>Host name: {{ envPlatform.node }}</b-card-text>
         <b-card-text class="clickable" @click="toggleHardware">Hardware</b-card-text>
         <template v-if="hardwareVisible">
             <b-card-text class="pl-4">
-                Processor: {{ env.info.hardware.processor }}
+                Processor: {{ envPlatform.hardware.processor }}
             </b-card-text>
             <b-card-text class="pl-4">
-                Architecture: {{ env.info.hardware.machine }}
+                Architecture: {{ envPlatform.hardware.machine }}
             </b-card-text>
         </template>
         <b-card-text class="clickable" @click="toggleOS">
@@ -18,29 +19,29 @@
         </b-card-text>
         <template v-if="osVisible">
             <b-card-text class="pl-4">
-                System: {{ env.info.os.system }}
+                System: {{ envPlatform.os.system }}
             </b-card-text>
             <b-card-text class="pl-4">
-                Release: {{ env.info.os.release }}
+                Release: {{ envPlatform.os.release }}
             </b-card-text>
             <b-card-text class="pl-4">
-                Version: {{ env.info.os.version }}
+                Version: {{ envPlatform.os.version }}
             </b-card-text>
         </template>
         <b-card-text class="clickable" @click="togglePython">Python</b-card-text>
         <template v-if="pythonVisible">
             <b-card-text class="pl-4">
-                Version: {{ env.info.python.version }}
+                Version: {{ envPlatform.python.version }}
             </b-card-text>
             <b-card-text class="pl-4">
-                Implementation: {{ env.info.python.implementation }}
+                Implementation: {{ envPlatform.python.implementation }}
             </b-card-text>
             <b-card-text class="pl-4">
-                Compiler: {{ env.info.python.compiler }}
+                Compiler: {{ envPlatform.python.compiler }}
             </b-card-text>
             <b-card-text class="pl-4">
-                Build: {{ env.info.python.build[0]
-                    + ' ' + env.info.python.build[1] }}
+                Build: {{ envPlatform.python.build[0]
+                    + ' ' + envPlatform.python.build[1] }}
             </b-card-text>
         </template>
     </b-card>
@@ -60,6 +61,10 @@ export default {
 
     props: {
         env: {
+            type: Object,
+            required: true
+        },
+        envPlatform: {
             type: Object,
             required: true
         }
@@ -84,6 +89,6 @@ export default {
 <style scoped>
 .clickable:hover {
     color: grey;
-    cursor: -webkit-grabbing;
+    cursor: pointer;
 }
 </style>

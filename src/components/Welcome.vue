@@ -2,23 +2,23 @@
     <b-container fluid class="pt-5 px-0">
         <img alt="Secchiware logo" src="../assets/secchiware_logo.png">
         <h1 class="my-5 mx-auto">Welcome to Secchiware Desktop Client!</h1>
-        <connection-form @connected="propagateConnection" />
+        <command-control-url-form @newC2URLProvided="propagateURLProvided" />
     </b-container>
 </template>
 
 <script>
-import ConnectionForm from './ConnectionForm.vue'
+import CommandControlURLForm from './CommandControlURLForm.vue'
 
 export default {
     name: 'welcome',
 
     components: {
-        ConnectionForm
+        'command-control-url-form': CommandControlURLForm
     },
 
     methods: {
-        propagateConnection(c2) {
-            this.$emit('connected', c2);
+        propagateURLProvided(c2URL) {
+            this.$emit('newC2URLProvided', c2URL);
         }
     }
 }

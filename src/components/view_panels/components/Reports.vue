@@ -56,7 +56,7 @@ export default {
         async getReports() {
             try {
                 let response = 
-                    await fetch(`${this.c2URL}/environments/${this.ip}/${this.port}/report`);
+                    await fetch(`${this.c2URL}/environments/${this.ip}/${this.port}/reports`);
                 this.reports = await response.json();
             } catch (err) {
                 alert("Something went wrong when trying to recover the tests' reports.");

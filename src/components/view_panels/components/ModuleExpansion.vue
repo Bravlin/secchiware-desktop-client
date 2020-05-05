@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>Name: {{ mod.name }}</div>
-        <template v-if="mod.test_sets.length > 0">
+        <template v-if="mod.test_sets">
             <div class="clickable" @click="toggleTestSets">Test sets</div>
             <template v-if="testSetsVisible">
                 <test-set-expansion
@@ -49,6 +49,6 @@ export default {
 <style scoped>
 .clickable:hover {
     color: grey;
-    cursor: -webkit-grabbing;
+    cursor: pointer;
 }
 </style>

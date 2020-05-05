@@ -1,13 +1,13 @@
 <template>
     <div>
         <div>Name: <b>{{ pack.name }}</b></div>
-        <template v-if="pack.modules.length > 0">
+        <template v-if="pack.modules">
             <div class="clickable" @click="toggleModules">Modules</div>
             <template v-if="modulesVisible">
                 <module-expansion v-for="m in pack.modules" :key="m.name" :mod="m" class="pl-4" />
             </template>
         </template>
-        <template v-if="pack.subpackages.length > 0">
+        <template v-if="pack.subpackages">
             <div class="clickable" @click="toggleSubpackages">Subpackages</div>
             <template v-if="subpackagesVisible">
                 <package-expansion 
@@ -60,6 +60,6 @@ export default {
 <style scoped>
 .clickable:hover {
     color: grey;
-    cursor: -webkit-grabbing;
+    cursor: pointer;
 }
 </style>

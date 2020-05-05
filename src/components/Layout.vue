@@ -20,8 +20,8 @@
             </div>
             <div 
                 class="py-1 navbar-button mt-auto"
-                :class="{active: currentPanel == 'connection-form'}"
-                @click="changePanel('connection-form')"
+                :class="{active: currentPanel == 'command-control-url-form'}"
+                @click="changePanel('command-control-url-form')"
             >
                 <b-icon-gear-fill class="navbar-icon" />
             </div>
@@ -40,20 +40,19 @@
 <script>
 import CommandControlPanel from './view_panels/CommandControlPanel.vue';
 import EnvironmentsPanel from './view_panels/EnvironmentsPanel.vue';
-import ConnectionForm from './ConnectionForm.vue';
+import CommandControlURLForm from './CommandControlURLForm.vue'
 
 export default {
     name: 'layout',
 
     components: {
-        CommandControlPanel,
-        EnvironmentsPanel,
-        ConnectionForm
+        'command-control-panel': CommandControlPanel,
+        'environments-panel': EnvironmentsPanel,
+        'command-control-url-form': CommandControlURLForm
     },
 
     data() {
         return {
-            sessionStart: new Date(),
             environments: null,
             availablePackages: null,
             currentPanel: 'command-control-panel'
@@ -61,8 +60,8 @@ export default {
     },
 
     props: {
-        c2: {
-            type: Object,
+        c2URL: {
+            type: String,
             required: true
         }
     },
@@ -74,8 +73,11 @@ export default {
 
         async setEnvironments() {
             try {
-                let response = await fetch(this.c2.url + '/environments');
-                this.environments = await response.json();
+                let response = await fetch(this.c2URL + '/environments');
+                if (response.status != 200)
+                    alert("Unexpected response from the Command an Control server when trying to recover its connected environments.");
+                else
+                    this.environments = await response.json();
             } catch (err) {
                 alert("Something went wrong when trying to recover the environments connected to the Command and Control server.");
             }
@@ -83,16 +85,18 @@ export default {
 
         async setAvailablePackages() {
             try {
-                let response = await fetch(this.c2.url + '/test_sets');
-                this.availablePackages = await response.json();
+                let response = await fetch(this.c2URL + '/test_sets');
+                if (response.status != 200)
+                    alert("Unexpected response from the Command an Control server when trying to recover its available tests.");
+                else
+                    this.availablePackages = await response.json();
             } catch (err) {
                 alert("Something went wrong when trying to recover the tests available at the Command and Control server.");
             }
         },
 
-        newConnection(c2) {
-            this.c2 = c2;
-            this.sessionStart = new Date(),
+        newC2URL(c2URL) {
+            this.c2URL = c2URL;
             this.setAvailablePackages();
             this.setEnvironments();
         }
@@ -114,14 +118,13 @@ export default {
             switch (this.currentPanel) {
                 case 'command-control-panel':
                     return {
-                        c2: this.c2,
-                        sessionStart: this.sessionStart,
+                        c2URL: this.c2URL,
                         environments: this.environments,
                         availablePackages: this.availablePackages
                     };
                 case 'environments-panel':
                     return {
-                        c2: this.c2,
+                        c2URL: this.c2URL,
                         envs: this.environments
                     };
                 default:
@@ -157,7 +160,7 @@ export default {
 
 #navbar .navbar-button:hover {
     color:gray;
-    cursor: -webkit-grabbing;
+    cursor: pointer;
 }
 
 #navbar .active {

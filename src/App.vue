@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <layout v-if="c2" :c2="c2" />
-    <welcome v-else @connected="newConnection" />
+    <layout v-if="c2URL" :c2URL="c2URL" />
+    <welcome v-else @newC2URLProvided="newC2URL" />
   </div>
 </template>
 
@@ -13,19 +13,19 @@ export default {
   name: 'app',
 
   components: {
-    Layout,
-    Welcome,
+    'layout': Layout,
+    'welcome': Welcome,
   },
 
   data() {
     return {
-      c2: null
+      c2URL: ''
     }
   },
 
   methods: {
-    newConnection(c2) {
-      this.c2 = c2;
+    newC2URL(c2URL) {
+      this.c2URL = c2URL;
     }
   }
 }

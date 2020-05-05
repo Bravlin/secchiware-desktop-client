@@ -12,13 +12,14 @@
             <b-col cols="7" md="8" lg="9" xl="10" class="p-5">
                 <b-card-group columns>
                     <environment-information
-                        v-if="selectedEnv"
+                        v-if="selectedEnv && envPlatform"
                         :env="selectedEnv"
+                        :envPlatform="envPlatform"
                     />
                     <test-packages v-if="installedPackages" :packages="installedPackages" />
                     <reports
                         v-if="selectedEnv"
-                        :c2URL="c2.url"
+                        :c2URL="c2URL"
                         :ip="selectedEnv.ip"
                         :port="selectedEnv.port"
                     />
@@ -37,21 +38,22 @@ export default {
     name: 'environments-panel',
 
     components: {
-        EnvironmentInformation,
-        TestPackages,
-        Reports
+        'environment-information': EnvironmentInformation,
+        'test-packages': TestPackages,
+        'reports': Reports
     },
 
     data() {
         return {
             selectedEnv: null,
+            envPlatform: null,
             installedPackages: null
         };
     },
 
     props: {
-        c2: {
-            type: Object,
+        c2URL: {
+            type: String,
             required: true,
         },
         envs: {
@@ -62,15 +64,35 @@ export default {
 
     watch: {
         selectedEnv: async function (env) {
-            this.installedPackages = [];
-
+            let responseInstalled, responsePlatform, msg;
             let ip = env.ip;
             let port = env.port;
+
+            this.installedPackages = [];
             try {
-                let response = await fetch(`${this.c2.url}/environments/${ip}/${port}/installed`);
-                this.installedPackages = await response.json();
+                responseInstalled = await fetch(`${this.c2URL}/environments/${ip}/${port}/installed`);
+                if (responseInstalled.status == 200)
+                    this.installedPackages = await responseInstalled.json();
+                else if (responseInstalled.status == 404 || responseInstalled.status == 502 || responseInstalled.status == 504) {
+                    msg = await responseInstalled.json();
+                    alert(msg.error);
+                } else
+                    alert("Unexpected response from the Command an Control server when trying to recover the selected environment's installed tests.");
             } catch (err) {
                 alert("Something went wrong when trying to recover the environment's installed tests.");
+            }
+
+            try {
+                responsePlatform = await fetch(`${this.c2URL}/environments/${ip}/${port}/info`);
+                if (responsePlatform.status == 200)
+                    this.envPlatform = await responsePlatform.json();
+                else if (responsePlatform.status == 404) {
+                    msg = await responsePlatform.json();
+                    alert(msg.error);
+                } else
+                    alert("Unexpected response from the Command an Control server when trying to recover the selected environment's platform information.");
+            } catch (err) {
+                alert("Something went wrong when trying to recover the environment's platform information.");
             }
         }
     },
@@ -79,10 +101,10 @@ export default {
         environmentsListOptions() {
             let options = [];
             for (const [ip, ports] of Object.entries(this.envs))
-                for (const [port, info] of Object.entries(ports))
+                for (const [port, sessionInfo] of Object.entries(ports))
                     options.push({
                         text: ip + ':' + port,
-                        value: {ip: ip, port: port, ...info}
+                        value: {ip: ip, port: port, ...sessionInfo}
                     });
             return options;
         }

@@ -20,7 +20,7 @@ export default {
     name: 'test-packages',
 
     components: {
-        PackageExpansion
+        'package-expansion': PackageExpansion
     },
     
     data() {
