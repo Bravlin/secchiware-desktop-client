@@ -1,16 +1,16 @@
 <template>
-    <b-card title="Test packages" align="left">
-        <b-card no-body>
-            <b-tabs card>
-                <b-tab title="Root" active>
-                    <b-form-radio-group v-model="selected" :options="rootOptions" stacked />
-                </b-tab>
-                <b-tab v-if="selected" title="Details">
-                    <package-expansion :pack="selected" />
-                </b-tab>
-            </b-tabs>
-        </b-card>
-    </b-card>
+    <b-container fluid>
+        <b-row>
+            <b-col class="black-background p-3" cols="4">
+                <h5>Root packages</h5>
+                <b-form-radio-group v-model="selected" :options="rootOptions" stacked />
+            </b-col>
+            <b-col class="p-3" cols="8">
+                <h5>Details</h5>
+                <package-expansion :pack="selected" v-if="selected" />
+            </b-col>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -47,3 +47,10 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.black-background {
+    background-color: rgb(51, 51, 51);
+    color: white;
+}
+</style>

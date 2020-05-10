@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div>Name: {{ testSet.name }}</div>
+        <div>Name: <b>{{ testSet.name }}</b></div>
         <template v-if="testSet.tests">
-            <div class="clickable" @click="toggleTests">Tests</div>
+            <div class="clickable" @click="toggleTests">{{ testsAction }} Tests</div>
             <template v-if="testsVisible">
-                <div v-for="t in testSet.tests" :key="t" class="pl-4">{{ t }}</div>
+                <div v-for="t in testSet.tests" :key="t" class="pl-4"><b>{{ t }}</b></div>
             </template>
         </template>
     </div>
@@ -16,7 +16,8 @@ export default {
 
     data() {
         return {
-            testsVisible: false
+            testsVisible: false,
+            testsAction: '+',
         };
     },
 
@@ -30,6 +31,7 @@ export default {
     methods: {
         toggleTests() {
             this.testsVisible = !this.testsVisible;
+            this.testsAction = this.testsVisible ? '-' : '+';
         }
     }
 };

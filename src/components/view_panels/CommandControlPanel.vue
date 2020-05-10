@@ -10,7 +10,17 @@
                     Number of available test packages: {{ availablePackagesCount }}
                 </b-card-text>
             </b-card>
-            <test-packages :packages="availablePackages" />
+            <b-card title="Tests repository" align="left">
+                <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                    <b-tab title="Explore" title-link-class="text-light" active>
+                        <test-packages :packages="availablePackages" />
+                    </b-tab>
+                    <b-tab title="Upload" title-link-class="text-light">
+                    </b-tab>
+                    <b-tab title="Delete" title-link-class="text-light">
+                    </b-tab>
+                </b-tabs>
+            </b-card>
         </b-card-group>
     </div>
 </template>

@@ -120,7 +120,7 @@ export default {
 
 .clickable:hover {
     color: grey;
-    cursor: -webkit-grabbing;
+    cursor: pointer;
 }
 
 @media (min-width: 576px) {

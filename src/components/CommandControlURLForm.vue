@@ -40,19 +40,17 @@ export default {
             error: false,
             errorMessage: '',
             c2URL: ''
-        }
+        };
     },
 
     methods: {
         handleSubmit() {
-            this.submitting = true;
             this.clearStatus();
 
             if (this.invalidURL) {
                 this.error = true;
                 this.errorMessage = 'You must provide an URL.';
-            }
-            else
+            } else
                 this.$emit('newC2URLProvided', this.c2URL);
         },
 
