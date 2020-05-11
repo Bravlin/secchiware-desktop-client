@@ -1,5 +1,5 @@
 <template>
-    <b-form @submit.prevent="">
+    <b-form @submit.prevent="handleSubmit">
         <b-form-group
             id="packages-fieldset"
             label="Packages"
@@ -16,14 +16,14 @@
             ></b-form-file>
         </b-form-group>
         <b-form-group
-            id="password-fieldset"
+            id="upload-packages-password-fieldset"
             label="Password"
             label-for="password"
             label-cols="4"
             label-align="right"
         >
             <b-form-input
-                id="password"
+                id="upload-packages-password"
                 type="password"
                 v-model="password"
             ></b-form-input>
@@ -36,8 +36,18 @@
 </template>
 
 <script>
+import Vue from 'vue';
+const crypto = require('crypto');
+
 export default {
     name: 'upload-packages-form',
+
+    props: {
+        c2URL: {
+            type: String,
+            required: true
+        }
+    },
 
     data() {
         return {
@@ -49,14 +59,54 @@ export default {
     },
 
     methods: {
-        handleSubmit() {
+        async handleSubmit() {
+            const url = `${this.c2URL}/test_sets`;
+            var preparedRequest, actualRequest, requestBody;
+            var hasher, digest, signature;
+
             this.clearStatus();
 
             if (this.invalidFile || this.invalidPassword) {
                 this.error = true;
                 this.errorMessage = 'You must fill all fields.';
             } else {
-                
+                requestBody = new FormData();
+                requestBody.append('packages', this.packagesToUpload);
+                preparedRequest = new Request(url, {method: 'PATCH', body: requestBody});
+                actualRequest = preparedRequest.clone();
+
+                hasher = crypto.createHash('sha256');
+                hasher.update(await preparedRequest.text());
+                digest = hasher.digest('base64');
+                console.log(digest);
+                actualRequest.headers.append('Digest', `sha-256=${digest}`);
+
+                signature = Vue.newSignature(
+                    this.password,
+                    'GET',
+                    '/test_sets',
+                    {
+                        signatureHeaders: ['Digest'],
+                        headerRecoverer: header => actualRequest.headers.get(header)
+                    }
+                );
+                actualRequest.headers.set(
+                    'Authorization',
+                    Vue.newAuthorizationHeader('Client', signature, ['Digest'])
+                );
+
+                try {
+                    let response = await fetch(actualRequest);
+                    switch (response.status) {
+                        case 400:
+                        case 401:
+                        case 415:
+                            alert((await response.json()).error);
+                    }
+                } catch (err) {
+                    console.log(err);
+                    alert('Something went wrong');
+                }
             }
         },
 

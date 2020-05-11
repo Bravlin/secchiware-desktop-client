@@ -99,7 +99,7 @@ export default {
             this.c2URL = c2URL;
             this.setAvailablePackages();
             this.setEnvironments();
-        }
+        },
     },
 
     computed: {
@@ -136,6 +136,8 @@ export default {
             switch (this.currentPanel) {
                 case 'connection-form':
                     return {connected: this.newConnection};
+                case 'command-control-panel':
+                    return {packagesDeleted: this.setAvailablePackages};
                 default:
                     return null;
             }

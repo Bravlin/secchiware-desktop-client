@@ -6,9 +6,11 @@ export default {
                 key,
                 method,
                 canonicalURI,
-                query = '',
-                signatureHeaders = [],
-                headerRecoverer = null) {
+                {
+                    query = '',
+                    signatureHeaders = null,
+                    headerRecoverer = null
+                } = {}) {
             var header, headerValue, hasher;
             var signatureString = `${method.toLowerCase()}\n${canonicalURI}\n`;
 
@@ -34,7 +36,7 @@ export default {
             return hasher.digest('base64');
         },
 
-        Vue.newAuthorizationHeader = function(keyId, signature, signatureHeaders = []) {
+        Vue.newAuthorizationHeader = function(keyId, signature, signatureHeaders = null) {
             var signedHeaders;
             var authorizationHeader = `SECCHIWARE-HMAC-256 keyId=${keyId},`;
 
