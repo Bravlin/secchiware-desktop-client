@@ -1,10 +1,11 @@
 <template>
-    <b-form @submit.prevent="handleSubmit">
+    <b-form class="text-center p-3" @submit.prevent="handleSubmit">
         <b-form-group
             id="packages-fieldset"
             label="Packages"
-            label-for="packages-to-upload"
-            label-cols="4"
+            label-cols="3"
+            label-cols-md="2"
+            label-cols-xl="1"
             label-align="right"
         >
             <b-form-file
@@ -18,8 +19,10 @@
         <b-form-group
             id="upload-packages-password-fieldset"
             label="Password"
-            label-for="password"
-            label-cols="4"
+            label-for="upload-packages-password"
+            label-cols="3"
+            label-cols-md="2"
+            label-cols-xl="1"
             label-align="right"
         >
             <b-form-input
@@ -76,14 +79,13 @@ export default {
                 actualRequest = preparedRequest.clone();
 
                 hasher = crypto.createHash('sha256');
-                hasher.update(await preparedRequest.text());
+                hasher.update(new Uint8Array(await preparedRequest.arrayBuffer()));
                 digest = hasher.digest('base64');
-                console.log(digest);
                 actualRequest.headers.append('Digest', `sha-256=${digest}`);
 
                 signature = Vue.newSignature(
                     this.password,
-                    'GET',
+                    preparedRequest.method,
                     '/test_sets',
                     {
                         signatureHeaders: ['Digest'],
@@ -98,14 +100,20 @@ export default {
                 try {
                     let response = await fetch(actualRequest);
                     switch (response.status) {
+                        case 204:
+                            this.$emit('packagesUploaded');
+                            alert('Packages uploaded!');
+                            break;
                         case 400:
                         case 401:
                         case 415:
                             alert((await response.json()).error);
+                            break;
+                        default:
+                            alert('Unexpected response from Command and Control server.');
                     }
                 } catch (err) {
-                    console.log(err);
-                    alert('Something went wrong');
+                    alert('Something went wrong trying to contact the Command and Control server.');
                 }
             }
         },

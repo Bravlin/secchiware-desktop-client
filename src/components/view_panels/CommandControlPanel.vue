@@ -1,35 +1,44 @@
 <template>
     <div class="p-5">
-        <b-card-group columns>
-            <b-card title="General information" align="left">
-                <b-card-text>URL: {{ c2URL }}</b-card-text>
-                <b-card-text>
-                    Number of currently connected environments: {{ environmentsCount }}
-                </b-card-text>
-                <b-card-text>
-                    Number of available test packages: {{ availablePackagesCount }}
-                </b-card-text>
-            </b-card>
-            <b-card title="Tests repository" align="left">
-                <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
-                    <b-tab title="Explore" title-link-class="text-light" active>
-                        <test-packages :packages="availablePackages" />
-                    </b-tab>
-                    <b-tab title="Upload" title-link-class="text-light">
-                        <upload-packages-form :c2URL="c2URL" />
-                    </b-tab>
-                    <b-tab title="Delete" title-link-class="text-light">
-                        <delete-packages-form
-                            :packages="availablePackages"
-                            :c2URL="c2URL"
-                            baseEndpoint="/test_sets"
-                            @error="deletePackageError"
-                            @packagesDeleted="propagatePackagesDeleted"
-                        />
-                    </b-tab>
-                </b-tabs>
-            </b-card>
-        </b-card-group>
+        <b-card
+            title="General information"
+            align="left"
+            class="command-control-panel-b-card mx-auto"
+        >
+            <b-card-text>URL: {{ c2URL }}</b-card-text>
+            <b-card-text>
+                Number of currently connected environments: {{ environmentsCount }}
+            </b-card-text>
+            <b-card-text>
+                Number of available test packages: {{ availablePackagesCount }}
+            </b-card-text>
+        </b-card>
+        <b-card
+            title="Tests repository"
+            align="left"
+            class="command-control-panel-b-card mx-auto mt-5"
+        >
+            <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                <b-tab title="Explore" title-link-class="text-light" active>
+                    <test-packages :packages="availablePackages" />
+                </b-tab>
+                <b-tab title="Upload" title-link-class="text-light">
+                    <upload-packages-form
+                        :c2URL="c2URL"
+                        @packagesUploaded="propagatePackagesUploaded"
+                    />
+                </b-tab>
+                <b-tab title="Delete" title-link-class="text-light">
+                    <delete-packages-form
+                        :packages="availablePackages"
+                        :c2URL="c2URL"
+                        baseEndpoint="/test_sets"
+                        @error="deletePackageError"
+                        @packagesDeleted="propagatePackagesDeleted"
+                    />
+                </b-tab>
+            </b-tabs>
+        </b-card>
     </div>
 </template>
 
@@ -64,10 +73,14 @@ export default {
 
     methods: {
         async deletePackageError(response) {
-            if (response.status == 401 || response.status == 404)
+            if (response.status == 401)
                 alert((await response.json()).error);
             else
                 alert("Unexpected response from Command and Control server.");
+        },
+
+        propagatePackagesUploaded() {
+            this.$emit('packagesUploaded');
         },
 
         propagatePackagesDeleted() {
@@ -101,5 +114,9 @@ export default {
     .card-columns {
         column-count: 2;
     }
+}
+
+.command-control-panel-b-card {
+    max-width: 800px;
 }
 </style>

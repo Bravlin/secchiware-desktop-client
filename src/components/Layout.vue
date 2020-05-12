@@ -137,7 +137,10 @@ export default {
                 case 'connection-form':
                     return {connected: this.newConnection};
                 case 'command-control-panel':
-                    return {packagesDeleted: this.setAvailablePackages};
+                    return {
+                        packagesDeleted: this.setAvailablePackages,
+                        packagesUploaded: this.setAvailablePackages,
+                    };
                 default:
                     return null;
             }

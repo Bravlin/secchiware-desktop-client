@@ -2,7 +2,7 @@
     <b-container fluid>
         <b-form @submit.prevent="handleSubmit">
             <b-row>
-                <b-col class="black-background p-3" cols="6">
+                <b-col class="black-background py-3" cols="6">
                     <h5>Root packages</h5>
                     <b-form-checkbox-group
                         id="delete-packages-checkbox"
@@ -11,12 +11,14 @@
                         name="root-package"
                     ></b-form-checkbox-group>
                 </b-col>
-                <b-col class="p-3" cols="6">
+                <b-col cols="6" class="text-center py-3">
                      <b-form-group
                         id="delete-packages-password-fieldset"
                         label="Password"
-                        label-for="password"
-                        label-cols="4"
+                        label-for="delete-packages-password"
+                        label-cols="5"
+                        label-cols-md="4"
+                        label-cols-xl="3"
                         label-align="right"
                     >
                         <b-form-input
@@ -28,7 +30,7 @@
                     <b-alert v-model="error" variant="danger" dismissible>
                         {{ this.errorMessage }}
                     </b-alert>
-                    <b-button type="submit" variant="dark">Delete</b-button>
+                    <b-button type="submit" variant="dark" class="mt-1">Delete</b-button>
                 </b-col>
             </b-row>
         </b-form>
