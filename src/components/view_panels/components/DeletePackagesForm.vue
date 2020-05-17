@@ -9,7 +9,7 @@
                         v-model="selected"
                         :options="rootOptions"
                         name="root-package"
-                    ></b-form-checkbox-group>
+                    />
                 </b-col>
                 <b-col cols="6" class="text-center py-3">
                      <b-form-group
@@ -25,7 +25,7 @@
                             id="delete-packages-password"
                             type="password"
                             v-model="password"
-                        ></b-form-input>
+                        />
                     </b-form-group>
                     <b-alert v-model="error" variant="danger" dismissible>
                         {{ this.errorMessage }}
@@ -118,10 +118,10 @@ export default {
 
     computed: {
         rootOptions() {
-            let options = [];
-            this.packages.forEach(pack => {
-                options.push({text: pack.name, value: pack.name});
-            });
+            var options = [];
+            var p;
+            for (p of this.packages)
+                options.push({text: p.name, value: p.name});
             return options;
         },
 

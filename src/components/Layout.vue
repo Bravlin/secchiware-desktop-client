@@ -125,7 +125,8 @@ export default {
                 case 'environments-panel':
                     return {
                         c2URL: this.c2URL,
-                        envs: this.environments
+                        envs: this.environments,
+                        availablePackages: this.availablePackages
                     };
                 default:
                     return null;

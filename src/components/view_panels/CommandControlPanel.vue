@@ -62,7 +62,7 @@ export default {
             required: true
         },
         environments: {
-            type: Object,
+            type: Array,
             required: true
         },
         availablePackages: {
@@ -94,10 +94,7 @@ export default {
         },
 
         environmentsCount() {
-            let res = 0;
-            for (let host in this.environments)
-                res += Object.keys(this.environments[host]).length;
-            return res;
+            return this.environments.length;
         }
     }
 };

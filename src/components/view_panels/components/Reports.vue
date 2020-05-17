@@ -47,7 +47,7 @@ export default {
             required: true
         },
         port: {
-            type: String,
+            type: Number,
             required: true
         }
     },

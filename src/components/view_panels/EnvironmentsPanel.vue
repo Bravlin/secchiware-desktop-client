@@ -16,7 +16,34 @@
                         :env="selectedEnv"
                         :envPlatform="envPlatform"
                     />
-                    <test-packages v-if="installedPackages" :packages="installedPackages" />
+                    <b-card v-if="selectedEnv" title="Tests management" align="left">
+                        <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                            <b-tab title="Explore" title-link-class="text-light" active>
+                                <test-packages
+                                    v-if="installedPackages"
+                                    :packages="installedPackages" 
+                                />
+                            </b-tab>
+                            <b-tab title="Install" title-link-class="text-light">
+                                <install-packages-form
+                                    :c2URL="c2URL"
+                                    :c2AvailablePackages="availablePackages"
+                                    :envIP="selectedEnv.ip"
+                                    :envPort="selectedEnv.port"
+                                    @packagesInstalled="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                                />
+                            </b-tab>
+                            <b-tab title="Uninstall" title-link-class="text-light">
+                                <delete-packages-form
+                                    :packages="installedPackages"
+                                    :c2URL="c2URL"
+                                    :baseEndpoint="`/environments/${selectedEnv.ip}/${selectedEnv.port}/installed`"
+                                    @error="uninstallPackageError"
+                                    @packagesDeleted="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                                />
+                            </b-tab>
+                        </b-tabs>
+                    </b-card>
                     <reports
                         v-if="selectedEnv"
                         :c2URL="c2URL"
@@ -32,6 +59,8 @@
 <script>
 import EnvironmentInformation from './components/EnvironmentInformation.vue';
 import TestPackages from './components/TestPackages.vue';
+import DeletePackagesForm from './components/DeletePackagesForm';
+import InstallPackagesForm from './components/InstallPackagesForm';
 import Reports from './components/Reports.vue'
 
 export default {
@@ -40,6 +69,8 @@ export default {
     components: {
         'environment-information': EnvironmentInformation,
         'test-packages': TestPackages,
+        'install-packages-form': InstallPackagesForm,
+        'delete-packages-form': DeletePackagesForm,
         'reports': Reports
     },
 
@@ -57,55 +88,85 @@ export default {
             required: true,
         },
         envs: {
-            type: Object,
+            type: Array,
+            required: true
+        },
+        availablePackages: {
+            type: Array,
             required: true
         }
     },
 
-    watch: {
-        selectedEnv: async function (env) {
-            let responseInstalled, responsePlatform, msg;
-            let ip = env.ip;
-            let port = env.port;
-
+    methods: {
+        async setInstalledPackages(ip, port) {
+            var response;
             this.installedPackages = [];
             try {
-                responseInstalled = await fetch(`${this.c2URL}/environments/${ip}/${port}/installed`);
-                if (responseInstalled.status == 200)
-                    this.installedPackages = await responseInstalled.json();
-                else if (responseInstalled.status == 404 || responseInstalled.status == 502 || responseInstalled.status == 504) {
-                    msg = await responseInstalled.json();
-                    alert(msg.error);
-                } else
-                    alert("Unexpected response from the Command an Control server when trying to recover the selected environment's installed tests.");
+                response = await fetch(`${this.c2URL}/environments/${ip}/${port}/installed`);
+                switch (response.status) {
+                    case 200:
+                        this.installedPackages = await response.json();
+                        break;
+                    case 404:
+                    case 502:
+                    case 504:
+                        alert((await response.json()).error);
+                        break;
+                    default:
+                        alert(
+                            "Unexpected response from the Command an Control server when trying "
+                            + "to recover the selected environment's installed tests.");
+                }    
             } catch (err) {
-                alert("Something went wrong when trying to recover the environment's installed tests.");
+                alert(
+                    "Something went wrong when trying to recover the environment's installed "
+                    + "tests.");
             }
+        },
 
+        async setPlatformInformation(ip, port) {
+            var response;
             try {
-                responsePlatform = await fetch(`${this.c2URL}/environments/${ip}/${port}/info`);
-                if (responsePlatform.status == 200)
-                    this.envPlatform = await responsePlatform.json();
-                else if (responsePlatform.status == 404) {
-                    msg = await responsePlatform.json();
-                    alert(msg.error);
+                response = await fetch(`${this.c2URL}/environments/${ip}/${port}/info`);
+                if (response.status == 200)
+                    this.envPlatform = await response.json();
+                else if (response.status == 404) {
+                    alert((await response.json()).error);
                 } else
-                    alert("Unexpected response from the Command an Control server when trying to recover the selected environment's platform information.");
+                    alert(
+                        "Unexpected response from the Command an Control server when trying to "
+                        + "recover the selected environment's platform information.");
             } catch (err) {
-                alert("Something went wrong when trying to recover the environment's platform information.");
+                alert(
+                    "Something went wrong when trying to recover the environment's platform "
+                    + "information.");
             }
+        },
+
+        async uninstallPackageError(response) {
+            if (response.status == 401 || response.status == 404)
+                alert((await response.json()).error);
+            else
+                alert("Unexpected response from Command and Control server.");
+        },
+    },
+
+    watch: {
+        selectedEnv: async function (env) {
+            this.setInstalledPackages(env.ip, env.port);
+            this.setPlatformInformation(env.ip, env.port);
         }
     },
 
     computed: {
         environmentsListOptions() {
-            let options = [];
-            for (const [ip, ports] of Object.entries(this.envs))
-                for (const [port, sessionInfo] of Object.entries(ports))
-                    options.push({
-                        text: ip + ':' + port,
-                        value: {ip: ip, port: port, ...sessionInfo}
-                    });
+            var options = [];
+            var e;
+            for (e of this.envs)
+                options.push({
+                    text: `${e.ip}:${e.port}`,
+                    value: e
+                });
             return options;
         }
     }

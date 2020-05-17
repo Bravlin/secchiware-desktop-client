@@ -1,12 +1,15 @@
 <template>
     <b-card title="Environment information" align="left">
-        <b-card-text>URL: {{ env.ip + ':' + env.port }}</b-card-text>
+        <b-card-text>IP: {{ env.ip }}</b-card-text>
+        <b-card-text>Port: {{ env.port }}</b-card-text>
         <b-card-text>Session ID: {{ env.session_id }}</b-card-text>
         <b-card-text>Session start: {{ env.session_start }}</b-card-text>
-        <b-card-text>Platform: {{ envPlatform.platform }}</b-card-text>
         <b-card-text>Host name: {{ envPlatform.node }}</b-card-text>
-        <b-card-text class="clickable" @click="toggleHardware">Hardware</b-card-text>
-        <template v-if="hardwareVisible">
+        <b-card-text>Platform: {{ envPlatform.platform }}</b-card-text>
+        <b-card-text class="clickable" @click="toggleHardware">
+            {{ hardwareAction }} Hardware
+        </b-card-text>
+        <template v-if="hardwareAction == '-'">
             <b-card-text class="pl-4">
                 Processor: {{ envPlatform.hardware.processor }}
             </b-card-text>
@@ -15,9 +18,9 @@
             </b-card-text>
         </template>
         <b-card-text class="clickable" @click="toggleOS">
-            Operating system
+            {{ osAction }} Operating system
         </b-card-text>
-        <template v-if="osVisible">
+        <template v-if="osAction == '-'">
             <b-card-text class="pl-4">
                 System: {{ envPlatform.os.system }}
             </b-card-text>
@@ -28,8 +31,10 @@
                 Version: {{ envPlatform.os.version }}
             </b-card-text>
         </template>
-        <b-card-text class="clickable" @click="togglePython">Python</b-card-text>
-        <template v-if="pythonVisible">
+        <b-card-text class="clickable" @click="togglePython">
+            {{ pythonAction }} Python
+        </b-card-text>
+        <template v-if="pythonAction == '-'">
             <b-card-text class="pl-4">
                 Version: {{ envPlatform.python.version }}
             </b-card-text>
@@ -41,7 +46,7 @@
             </b-card-text>
             <b-card-text class="pl-4">
                 Build: {{ envPlatform.python.build[0]
-                    + ' ' + envPlatform.python.build[1] }}
+                    + ' - ' + envPlatform.python.build[1] }}
             </b-card-text>
         </template>
     </b-card>
@@ -53,9 +58,9 @@ export default {
 
     data() {
         return {
-            hardwareVisible: false,
-            osVisible: false,
-            pythonVisible: false,
+            hardwareAction: '+',
+            osAction: '+',
+            pythonAction: '+'
         }
     },
 
@@ -71,16 +76,20 @@ export default {
     },
 
     methods: {
+        nextHideOrShowSymbol(symbol) {
+            return symbol == '+' ? '-' : '+';
+        },
+
         toggleHardware() {
-            this.hardwareVisible = !this.hardwareVisible;
+            this.hardwareAction = this.nextHideOrShowSymbol(this.hardwareAction);
         },
 
         toggleOS() {
-            this.osVisible = !this.osVisible;
+            this.osAction = this.nextHideOrShowSymbol(this.osAction);
         },
 
         togglePython() {
-            this.pythonVisible = !this.pythonVisible;
+            this.pythonAction = this.nextHideOrShowSymbol(this.pythonAction);
         }
     },
 };
