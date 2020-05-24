@@ -50,6 +50,14 @@
                         :ip="selectedEnv.ip"
                         :port="selectedEnv.port"
                     />
+                    <b-card v-if="selectedEnv"  title="Execute tests" align="left">
+                        <execute-tests
+                            :c2URL="c2URL"
+                            :ip="selectedEnv.ip"
+                            :port="selectedEnv.port"
+                            :installedPackages="installedPackages"
+                        />
+                    </b-card>
                 </b-card-group>
             </b-col>
         </b-row>
@@ -62,6 +70,7 @@ import TestPackages from './components/TestPackages.vue';
 import DeletePackagesForm from './components/DeletePackagesForm';
 import InstallPackagesForm from './components/InstallPackagesForm';
 import Reports from './components/Reports.vue'
+import ExecuteTests from './components/ExecuteTests'
 
 export default {
     name: 'environments-panel',
@@ -71,7 +80,8 @@ export default {
         'test-packages': TestPackages,
         'install-packages-form': InstallPackagesForm,
         'delete-packages-form': DeletePackagesForm,
-        'reports': Reports
+        'reports': Reports,
+        'execute-tests': ExecuteTests
     },
 
     data() {
