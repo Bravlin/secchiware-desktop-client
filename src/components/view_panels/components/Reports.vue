@@ -10,7 +10,7 @@
                 <template v-if="selected">
                     <div><b>Name:</b> {{ selected.test_name }}</div>
                     <div><b>Status:</b> 
-                        <span :class="correspondingClass(selected.result_code)">
+                        <span :style="`color: ${correspondingTextColor(selected.result_code)};`">
                             {{ selectedStatus() }}
                         </span>
                     </div>
@@ -51,12 +51,12 @@ export default {
     },
 
     methods: {
-        correspondingClass(resultCode) {
+        correspondingTextColor(resultCode) {
             if (resultCode > 0)
-                return 'successful-test';
+                return 'green';
             if (resultCode < 0)
-                return 'failed-test';
-            return 'indeterminate-test';
+                return 'red';
+            return 'orange';
         },
 
         fieldFormatter(field) {
@@ -76,11 +76,11 @@ export default {
         reportsOptions() {
             var options = [];
             var rep;
-            var cssClass;
+            var color;
             var htmlContent;
             for (rep of this.reports) {
-                cssClass = this.correspondingClass(rep.result_code);
-                htmlContent = `<span class="${cssClass}">${rep.test_name}</span>`;
+                color = this.correspondingTextColor(rep.result_code);
+                htmlContent = `<span style="color: ${color};">${rep.test_name}</span>`;
                 options.push({html: htmlContent, value: rep});
             }
             return options;
