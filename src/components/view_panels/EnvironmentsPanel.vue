@@ -44,19 +44,25 @@
                             </b-tab>
                         </b-tabs>
                     </b-card>
-                    <reports
-                        v-if="selectedEnv"
-                        :c2URL="c2URL"
-                        :ip="selectedEnv.ip"
-                        :port="selectedEnv.port"
-                    />
                     <b-card v-if="selectedEnv"  title="Execute tests" align="left">
-                        <execute-tests
-                            :c2URL="c2URL"
-                            :ip="selectedEnv.ip"
-                            :port="selectedEnv.port"
-                            :installedPackages="installedPackages"
-                        />
+                        <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                            <b-tab title="Select tests" title-link-class="text-light" active>
+                                <execute-tests
+                                    :c2URL="c2URL"
+                                    :ip="selectedEnv.ip"
+                                    :port="selectedEnv.port"
+                                    :installedPackages="installedPackages"
+                                    @reportsRecovered="setReports"
+                                />
+                            </b-tab>
+                            <b-tab
+                                v-if="reports"
+                                title="Reports"
+                                title-link-class="text-light"
+                            >
+                                <reports :reports="reports" />
+                            </b-tab>
+                        </b-tabs>
                     </b-card>
                 </b-card-group>
             </b-col>
@@ -88,7 +94,8 @@ export default {
         return {
             selectedEnv: null,
             envPlatform: null,
-            installedPackages: null
+            installedPackages: null,
+            reports: null
         };
     },
 
@@ -125,12 +132,14 @@ export default {
                     default:
                         alert(
                             "Unexpected response from the Command an Control server when trying "
-                            + "to recover the selected environment's installed tests.");
+                            + "to recover the selected environment's installed tests."
+                        );
                 }    
             } catch (err) {
                 alert(
                     "Something went wrong when trying to recover the environment's installed "
-                    + "tests.");
+                    + "tests."
+                );
             }
         },
 
@@ -159,6 +168,10 @@ export default {
             else
                 alert("Unexpected response from Command and Control server.");
         },
+
+        setReports(reports) {
+            this.reports = reports;
+        }
     },
 
     watch: {

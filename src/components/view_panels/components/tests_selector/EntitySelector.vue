@@ -1,6 +1,14 @@
 <template>
     <div>
-        <b-button v-if="index === -1" variant="success" @click="add" class="px-1 py-0">+</b-button>
+        <b-button
+            v-if="index === -1"
+            variant="success"
+            @click="add"
+            class="px-1 py-0"
+            :disabled="disabled"
+        >
+            +
+        </b-button>
         <b-button v-else variant="danger" @click="remove" class="px-1 py-0">-</b-button>
         {{ text }}
     </div>
@@ -22,6 +30,10 @@ export default {
         text: {
             type: String,
             required: true
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
 

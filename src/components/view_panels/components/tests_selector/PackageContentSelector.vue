@@ -6,41 +6,50 @@
             :text="pack.name"
             @addValue="addPackage"
             @removeValue="removePackage"
+            :disabled="disabled"
         />
-        <div v-if="pack.modules" class="pl-3">
-            <p>Modules</p>
-            <module-content-selector
-                v-for="m of pack.modules"
-                :key="`${path}.${m.name}`"
-                :mod="m"
-                :selectedModules="selectedModules"
-                :selectedTestSets="selectedTestSets"
-                :packagePath="path"
-                @addModule="addModule"
-                @removeModule="removeModule"
-                @addTestSet="addTestSet"
-                @removeTestSet="removeTestSet"
-                class="pl-3"
-            />
+        <div v-if="pack.modules" class="pl-4">
+            <div class="clickable my-2" @click="toggleModules">{{ modulesAction }} Modules</div>
+            <template v-if="modulesVisible">
+                <module-content-selector
+                    v-for="m of pack.modules"
+                    :key="`${path}.${m.name}`"
+                    :mod="m"
+                    :selectedModules="selectedModules"
+                    :selectedTestSets="selectedTestSets"
+                    :packagePath="path"
+                    :disabled="disabled || selectedPackages.includes(path)"
+                    @addModule="addModule"
+                    @removeModule="removeModule"
+                    @addTestSet="addTestSet"
+                    @removeTestSet="removeTestSet"
+                    class="mt-2"
+                />
+            </template>
         </div>
-        <div v-if="pack.subpackages" class="pl-3">
-            <p>Subpackages</p>
-            <package-content-selector
-                v-for="sp of pack.subpackages"
-                :key="`${pack.name}.${sp.name}`"
-                :pack="sp"
-                :selectedPackages="selectedPackages"
-                :selectedModules="selectedModules"
-                :selectedTestSets="selectedTestSets"
-                :parentPath="path"
-                @addPackage="addPackage"
-                @removePackage="removePackage"
-                @addModule="addModule"
-                @removeModule="removeModule"
-                @addTestSet="addTestSet"
-                @removeTestSet="removeTestSet"
-                class="pl-3"
-            />
+        <div v-if="pack.subpackages" class="pl-4">
+            <div class="clickable my-2" @click="toggleSubpackages">
+                {{ subpackagesAction }} Subpackages
+            </div>
+            <template v-if="subpackagesVisible">
+                <package-content-selector
+                    v-for="sp of pack.subpackages"
+                    :key="`${pack.name}.${sp.name}`"
+                    :pack="sp"
+                    :selectedPackages="selectedPackages"
+                    :selectedModules="selectedModules"
+                    :selectedTestSets="selectedTestSets"
+                    :parentPath="path"
+                    :disabled="disabled || selectedPackages.includes(path)"
+                    @addPackage="addPackage"
+                    @removePackage="removePackage"
+                    @addModule="addModule"
+                    @removeModule="removeModule"
+                    @addTestSet="addTestSet"
+                    @removeTestSet="removeTestSet"
+                    class="mt-1"
+                />
+            </template>
         </div>
     </div>
 </template>
@@ -55,6 +64,13 @@ export default {
     components: {
         'entity-selector': EntitySelector,
         'module-content-selector': ModuleContentSelector
+    },
+
+    data() {
+        return {
+            modulesAction: '+',
+            subpackagesAction: '+'
+        }
     },
 
     props: {
@@ -77,10 +93,22 @@ export default {
         parentPath: {
             type: String,
             default: ''
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
 
     methods: {
+        toggleModules() {
+            this.modulesAction = this.modulesAction === '+' ? '-' : '+';
+        },
+
+        toggleSubpackages() {
+            this.subpackagesAction = this.subpackagesAction === '+' ? '-' : '+';
+        },
+
         addPackage(pName) {
             this.$emit('addPackage', pName);
         },
@@ -109,7 +137,22 @@ export default {
     computed: {
         path() {
             return this.parentPath ? `${this.parentPath}.${this.pack.name}` : this.pack.name;
+        },
+
+        modulesVisible() {
+            return this.modulesAction === '-';
+        },
+
+        subpackagesVisible() {
+            return this.subpackagesAction === '-';
         }
     }
 };
 </script>
+
+<style scoped>
+.clickable:hover {
+    color: grey;
+    cursor: pointer;
+}
+</style>
