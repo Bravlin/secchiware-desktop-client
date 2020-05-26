@@ -15,7 +15,7 @@
                         </span>
                     </div>
                     <div><b>Time of start:</b> {{ selected.timestamp_start }}</div>
-                    <div><b>Time of end:</b> {{ selected.timestamp_start }}</div>
+                    <div><b>Time of end:</b> {{ selected.timestamp_end }}</div>
                     <div><b>Description:</b> {{ selected.test_description }}</div>
                     <template v-if="selected.hasOwnProperty('additional_info')">
                         <div><b>Additional information:</b></div>

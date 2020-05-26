@@ -178,6 +178,7 @@ export default {
         selectedEnv: async function (env) {
             this.setInstalledPackages(env.ip, env.port);
             this.setPlatformInformation(env.ip, env.port);
+            this.reports = null;
         }
     },
 

@@ -64,6 +64,18 @@ export default {
         }
     },
 
+    watch: {
+        installedPackages: {
+            handler() {
+                this.selectedPackages = [];
+                this.selectedModules = [];
+                this.selectedTestSets = [];
+            },
+            deep: true,
+            immediate: true,
+        },
+    },
+
     methods: {
         addPackage(pName) {
             const f = e => !e.startsWith(`${pName}.`);
