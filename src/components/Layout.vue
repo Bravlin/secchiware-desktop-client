@@ -55,7 +55,8 @@ export default {
         return {
             environments: null,
             availablePackages: null,
-            currentPanel: 'command-control-panel'
+            currentPanel: 'command-control-panel',
+            eventSource: null
         };
     },
 
@@ -73,7 +74,7 @@ export default {
 
         async setEnvironments() {
             try {
-                let response = await fetch(this.c2URL + '/environments');
+                let response = await fetch(`${this.c2URL}/environments`);
                 if (response.status != 200)
                     alert("Unexpected response from the Command an Control server when trying to recover its connected environments.");
                 else
@@ -85,7 +86,7 @@ export default {
 
         async setAvailablePackages() {
             try {
-                let response = await fetch(this.c2URL + '/test_sets');
+                let response = await fetch(`${this.c2URL}/test_sets`);
                 if (response.status != 200)
                     alert("Unexpected response from the Command an Control server when trying to recover its available tests.");
                 else
@@ -95,10 +96,30 @@ export default {
             }
         },
 
+        async subscribe() {
+            this.source = new EventSource(`${this.c2URL}/events`);
+
+            this.source.onmessage = event => {
+                var data = JSON.parse(event.data);
+                switch (data.event) {
+                    case "start":
+                        this.environments.push(data.content);
+                        break;
+                    case "stop":
+                        this.environments = this.environments.filter(
+                            env => data.content.ip != env.ip && data.content.port != env.port
+                        );
+                }
+            }
+        },
+
         newC2URL(c2URL) {
             this.c2URL = c2URL;
             this.setAvailablePackages();
             this.setEnvironments();
+            if (this.eventSource)
+                this.eventSource.close();
+            this.subscribe();
         },
     },
 
@@ -149,8 +170,9 @@ export default {
     },
 
     created() {
-        this.setEnvironments();
         this.setAvailablePackages();
+        this.setEnvironments();
+        this.subscribe();
     }
 };
 </script>
