@@ -19,7 +19,7 @@
                             placeholder="http://127.0.0.1/5000"
                             @focus="clearStatus"
                             @keypress="clearStatus"
-                        ></b-form-input>
+                        />
                     </b-form-group>      
                     <b-alert v-model="error" variant="danger" dismissible class="mb-4">
                         {{ this.errorMessage }}

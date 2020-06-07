@@ -11,11 +11,17 @@
             </b-col>
             <b-col cols="7" md="8" lg="9" xl="10" class="p-5">
                 <b-card-group columns>
-                    <environment-information
+                    <b-card
+                        title="Environment information"
+                        align="left"
                         v-if="selectedEnv && envPlatform"
-                        :env="selectedEnv"
-                        :envPlatform="envPlatform"
-                    />
+                    >
+                        <div>IP: {{ selectedEnv.ip }}</div>
+                        <div>Port: {{ selectedEnv.port }}</div>
+                        <div>Session ID: {{ selectedEnv.session_id }}</div>
+                        <div>Session start: {{ selectedEnv.session_start }}</div>
+                        <platform-information :platform="envPlatform" />
+                    </b-card>
                     <b-card v-if="selectedEnv" title="Tests management" align="left">
                         <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
                             <b-tab title="Explore" title-link-class="text-light" active>
@@ -71,7 +77,7 @@
 </template>
 
 <script>
-import EnvironmentInformation from './components/EnvironmentInformation.vue';
+import PlatformInformation from './components/PlatformInformation.vue';
 import TestPackages from './components/TestPackages.vue';
 import DeletePackagesForm from './components/DeletePackagesForm';
 import InstallPackagesForm from './components/InstallPackagesForm';
@@ -82,7 +88,7 @@ export default {
     name: 'environments-panel',
 
     components: {
-        'environment-information': EnvironmentInformation,
+        'platform-information': PlatformInformation,
         'test-packages': TestPackages,
         'install-packages-form': InstallPackagesForm,
         'delete-packages-form': DeletePackagesForm,

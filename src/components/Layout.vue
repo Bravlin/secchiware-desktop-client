@@ -15,7 +15,10 @@
             >
                 <b-icon-laptop class="navbar-icon" />
             </div>
-            <div class="py-1 navbar-button">
+            <div class="py-1 navbar-button"
+                :class="{active: currentPanel == 'sessions-panel'}"
+                @click="changePanel('sessions-panel')"
+            >
                 <b-icon-documents class="navbar-icon" />
             </div>
             <div 
@@ -40,7 +43,8 @@
 <script>
 import CommandControlPanel from './view_panels/CommandControlPanel.vue';
 import EnvironmentsPanel from './view_panels/EnvironmentsPanel.vue';
-import CommandControlURLForm from './CommandControlURLForm.vue'
+import SessionsPanel from './view_panels/SessionsPanel';
+import CommandControlURLForm from './CommandControlURLForm.vue';
 
 export default {
     name: 'layout',
@@ -48,7 +52,8 @@ export default {
     components: {
         'command-control-panel': CommandControlPanel,
         'environments-panel': EnvironmentsPanel,
-        'command-control-url-form': CommandControlURLForm
+        'sessions-panel': SessionsPanel,
+        'command-control-url-form': CommandControlURLForm,
     },
 
     data() {
@@ -102,10 +107,10 @@ export default {
             this.source.onmessage = event => {
                 var data = JSON.parse(event.data);
                 switch (data.event) {
-                    case "start":
+                    case "session_start":
                         this.environments.push(data.content);
                         break;
-                    case "stop":
+                    case "session_stop":
                         this.environments = this.environments.filter(
                             env => data.content.ip != env.ip && data.content.port != env.port
                         );
@@ -149,6 +154,10 @@ export default {
                         envs: this.environments,
                         availablePackages: this.availablePackages
                     };
+                case 'sessions-panel':
+                    return {
+                        c2URL: this.c2URL
+                    }
                 default:
                     return null;
             }

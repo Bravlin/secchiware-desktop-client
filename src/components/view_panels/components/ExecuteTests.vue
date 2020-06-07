@@ -124,12 +124,15 @@ export default {
             if (packages && packages.length > 0)
                 query += 'packages=' + packages.join(',');
             if (modules && modules.length > 0)
-                query += 'modules=' + modules.join(',');
+                query += '&modules=' + modules.join(',');
             if (testSets && testSets.length > 0)
-                query += 'test_sets=' + testSets.join(',');
+                query += '&test_sets=' + testSets.join(',');
 
-            if (query)
+            if (query) {
+                if (query.startsWith('&'))
+                    query = query.slice(1);
                 url += `?${query}`;
+            }
             
             try {
                 let response = await fetch(url);
@@ -146,8 +149,8 @@ export default {
                         break;
                     default:
                         alert(
-                            "Unexpected response from Command and Control server when trying to "
-                            + "get some reports from the requested environment."
+                            'Unexpected response from Command and Control server when trying to '
+                            + 'get some reports from the requested environment.'
                         );
                 }
             } catch (err) {
