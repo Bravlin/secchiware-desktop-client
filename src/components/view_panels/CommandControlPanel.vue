@@ -1,7 +1,7 @@
 <template>
     <div class="p-5">
         <b-card
-            title="General information"
+            title="Command and Control server's general information"
             align="left"
             class="command-control-panel-b-card mx-auto"
         >

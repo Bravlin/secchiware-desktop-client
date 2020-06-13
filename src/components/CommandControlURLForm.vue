@@ -8,8 +8,6 @@
                         id="c2-url-fieldset"
                         label="URL"
                         label-for="c2-url"
-                        label-cols="4"
-                        label-align="right"
                         class="mb-4"
                     >
                         <b-form-input

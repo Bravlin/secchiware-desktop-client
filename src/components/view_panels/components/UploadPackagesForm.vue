@@ -3,10 +3,7 @@
         <b-form-group
             id="packages-fieldset"
             label="Packages"
-            label-cols="3"
-            label-cols-md="2"
-            label-cols-xl="1"
-            label-align="right"
+            label-align="left"
         >
             <b-form-file
                 id="packges-to-upload"
@@ -20,10 +17,7 @@
             id="upload-packages-password-fieldset"
             label="Password"
             label-for="upload-packages-password"
-            label-cols="3"
-            label-cols-md="2"
-            label-cols-xl="1"
-            label-align="right"
+            label-align="left"
         >
             <b-form-input
                 id="upload-packages-password"

@@ -9,6 +9,7 @@
                         v-model="selected"
                         :options="rootOptions"
                         name="root-package"
+                        stacked
                     />
                 </b-col>
                 <b-col cols="6" class="text-center py-3">
@@ -16,10 +17,7 @@
                         id="delete-packages-password-fieldset"
                         label="Password"
                         label-for="delete-packages-password"
-                        label-cols="5"
-                        label-cols-md="4"
-                        label-cols-xl="3"
-                        label-align="right"
+                        label-align="left"
                     >
                         <b-form-input
                             id="delete-packages-password"

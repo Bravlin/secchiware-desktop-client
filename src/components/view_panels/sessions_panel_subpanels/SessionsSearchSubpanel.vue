@@ -1,7 +1,7 @@
 <template>
     <b-container fluid>
-        <b-row style="height: 100%">
-            <b-col class="search-form" cols="5" md="4" lg="3" xl="2">
+        <b-row>
+            <b-col class="search-form px-3 px-md-4 py-3 overflowable" cols="4" lg="3" xl="2">
                 <h5>Sessions</h5>
                 <b-form @submit.prevent="search">
                     <b-form-group
@@ -127,29 +127,38 @@
                             min="0"
                         />
                     </b-form-group>
-                    <b-button type="submit" variant="light">Search</b-button>
+                    <b-button type="submit" variant="light" class="mt-2">Search</b-button>
                 </b-form>
             </b-col>
-            <b-col cols="7" md="8" lg="9" xl="10" class="p-5">
-                <h3>Search results</h3>
-                <b-card
-                    align="left"
-                    v-for="sr of searchResults"
-                    :key="sr.session_id"
-                    :title="`ID: ${sr.session_id}`"
-                >
-                    <b-card-text>
-                        Status: {{ sr.hasOwnProperty('session_end') ? 'Closed' : 'Active'}}
-                    </b-card-text>
-                    <b-card-text>Start: {{ sr.session_start }}</b-card-text>
-                    <b-card-text v-if="sr.hasOwnProperty('session_end')">
-                        End: {{ sr.session_end }}
-                    </b-card-text>
-                    <b-card-text>Environment's IP: {{ sr.ip }}</b-card-text>
-                    <b-card-text>Environment's port: {{ sr.port }}</b-card-text>
-                    <b-card-text>Environment's platform: {{ sr.platform_os_system }}</b-card-text>
-                    <b-button @click="requestDetails(sr.session_id)">Details</b-button>
-                </b-card>
+            <b-col cols="8" lg="9" xl="10" class="p-5 overflowable">
+                <h3 style="color: white;">Search results</h3>
+                <b-row align-h="around">
+                    <b-card
+                        align="left"
+                        v-for="sr of searchResults"
+                        :key="sr.session_id"
+                        :title="`ID: ${sr.session_id}`"
+                        cols="12"
+                        md="6"
+                        lg="3"
+                        xl="2"
+                        class="m-3 search-item-card"
+                    >
+                        <b-card-text>
+                            Status: {{ sr.hasOwnProperty('session_end') ? 'Closed' : 'Active'}}
+                        </b-card-text>
+                        <b-card-text>Start: {{ sr.session_start }}</b-card-text>
+                        <b-card-text v-if="sr.hasOwnProperty('session_end')">
+                            End: {{ sr.session_end }}
+                        </b-card-text>
+                        <b-card-text>Environment's IP: {{ sr.ip }}</b-card-text>
+                        <b-card-text>Environment's port: {{ sr.port }}</b-card-text>
+                        <b-card-text>
+                            Environment's platform: {{ sr.platform_os_system }}
+                        </b-card-text>
+                        <b-button @click="requestDetails(sr.session_id)">Details</b-button>
+                    </b-card>
+                </b-row>
             </b-col>
         </b-row>
     </b-container>
@@ -233,5 +242,15 @@ export default {
 .search-form {
     color: white;
     background-color: rgb(51, 51, 51);
+}
+
+.overflowable {
+    height: 100vh;
+    overflow: auto;
+}
+
+.search-item-card {
+    width: 255px;
+    height: 400px;
 }
 </style>

@@ -35,7 +35,7 @@
             v-bind="panelProps"
             v-on="panelEvents"
             class="main-content flex-grow-1"
-            style="overflow: auto"
+            style="overflow: auto;"
         />
     </div>
 </template>
@@ -192,7 +192,7 @@ export default {
 }
 
 #navbar, .navbar-button {
-    width: 70px;
+    width: 50px;
 }
 
 #navbar .navbar-button:hover {
@@ -206,8 +206,8 @@ export default {
 }
 
 #navbar .navbar-icon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     margin-left: auto;
     margin-right: auto;
 }

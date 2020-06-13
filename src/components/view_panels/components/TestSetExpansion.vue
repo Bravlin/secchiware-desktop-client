@@ -4,7 +4,9 @@
         <template v-if="testSet.tests">
             <div class="clickable" @click="toggleTests">{{ testsAction }} Tests</div>
             <template v-if="testsVisible">
-                <div v-for="t in testSet.tests" :key="t" class="pl-4"><b>{{ t }}</b></div>
+                <ul class="pl-4 my-0">
+                <li v-for="t in testSet.tests" :key="t"><b>{{ t }}</b></li>
+                </ul>
             </template>
         </template>
     </div>
