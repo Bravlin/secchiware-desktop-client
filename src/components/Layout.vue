@@ -58,7 +58,6 @@ export default {
 
     data() {
         return {
-            environments: null,
             availablePackages: null,
             currentPanel: 'command-control-panel',
             eventSource: null
@@ -81,18 +80,6 @@ export default {
             this.currentPanel = panel;
         },
 
-        async setEnvironments() {
-            try {
-                let response = await fetch(`${this.c2URL}/environments`);
-                if (response.status != 200)
-                    alert("Unexpected response from the Command an Control server when trying to recover its connected environments.");
-                else
-                    this.environments = await response.json();
-            } catch (err) {
-                alert("Something went wrong when trying to recover the environments connected to the Command and Control server.");
-            }
-        },
-
         async setAvailablePackages() {
             try {
                 let response = await fetch(`${this.c2URL}/test_sets`);
@@ -105,43 +92,17 @@ export default {
             }
         },
 
-        async subscribe() {
-            this.source = new EventSource(`${this.c2URL}/events`);
-
-            this.source.onmessage = event => {
-                var data = JSON.parse(event.data);
-                switch (data.event) {
-                    case "session_start":
-                        this.environments.push(data.content);
-                        break;
-                    case "session_stop":
-                        this.environments = this.environments.filter(
-                            env => data.content.ip != env.ip && data.content.port != env.port
-                        );
-                }
-            }
-        },
-
         newC2URL(c2URL) {
             this.c2URL = c2URL;
             this.setAvailablePackages();
-            this.setEnvironments();
             if (this.eventSource)
                 this.eventSource.close();
-            this.subscribe();
         },
     },
 
     computed: {
         panelConditions() {
-            switch (this.currentPanel) {
-                case 'command-control-panel':
-                    return this.environments && this.availablePackages;
-                case 'environments-panel':
-                    return this.environments != null;
-                default:
-                    return true;
-            }
+            return this.currentPanel === 'command-control-panel' ? this.availablePackages : true;
         },
 
         panelProps() {
@@ -150,14 +111,12 @@ export default {
                     return {
                         c2URL: this.c2URL,
                         c2Password: this.c2Password,
-                        environments: this.environments,
                         availablePackages: this.availablePackages
                     };
                 case 'environments-panel':
                     return {
                         c2URL: this.c2URL,
                         c2Password: this.c2Password,
-                        envs: this.environments,
                         availablePackages: this.availablePackages
                     };
                 case 'sessions-panel':
@@ -186,10 +145,7 @@ export default {
     },
 
     created() {
-        this.setAvailablePackages();
-        this.setEnvironments();
-        this.subscribe();
-    }
+        this.setAvailablePackages();    }
 };
 </script>
 

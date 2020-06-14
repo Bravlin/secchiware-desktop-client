@@ -7,9 +7,6 @@
         >
             <b-card-text>URL: {{ c2URL }}</b-card-text>
             <b-card-text>
-                Number of currently connected environments: {{ environmentsCount }}
-            </b-card-text>
-            <b-card-text>
                 Number of available test packages: {{ availablePackagesCount }}
             </b-card-text>
         </b-card>
@@ -67,10 +64,6 @@ export default {
             type: String,
             required: true
         },
-        environments: {
-            type: Array,
-            required: true
-        },
         availablePackages: {
             type: Array,
             required: true
@@ -97,10 +90,6 @@ export default {
     computed: {
         availablePackagesCount() {
             return this.availablePackages.length;
-        },
-
-        environmentsCount() {
-            return this.environments.length;
         }
     }
 };
