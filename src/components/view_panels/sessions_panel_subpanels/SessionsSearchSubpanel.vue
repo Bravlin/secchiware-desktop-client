@@ -131,7 +131,7 @@
                 </b-form>
             </b-col>
             <b-col cols="8" lg="9" xl="10" class="p-5 overflowable">
-                <h3 style="color: white;">Search results</h3>
+                <h3 class="background-title">Search results</h3>
                 <b-row align-h="around">
                     <b-card
                         align="left"
@@ -252,5 +252,9 @@ export default {
 .search-item-card {
     width: 255px;
     height: 400px;
+}
+
+.background-title {
+    color: white;
 }
 </style>

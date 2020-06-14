@@ -13,18 +13,6 @@
                     />
                 </b-col>
                 <b-col cols="6" class="text-center py-3">
-                     <b-form-group
-                        id="delete-packages-password-fieldset"
-                        label="Password"
-                        label-for="delete-packages-password"
-                        label-align="left"
-                    >
-                        <b-form-input
-                            id="delete-packages-password"
-                            type="password"
-                            v-model="password"
-                        />
-                    </b-form-group>
                     <b-alert v-model="error" variant="danger" dismissible>
                         {{ this.errorMessage }}
                     </b-alert>
@@ -44,7 +32,6 @@ export default {
     data() {
         return {
             selected: [],
-            password: '',
             error: false,
             errorMessage: ''
         };
@@ -56,6 +43,10 @@ export default {
             required: true
         },
         c2URL: {
+            type: String,
+            required: true
+        },
+        c2Password: {
             type: String,
             required: true
         },
@@ -72,9 +63,9 @@ export default {
             
             this.clearStatus();
 
-            if (this.invalidSelection || this.invalidPassword) {
+            if (this.invalidSelection) {
                 this.error = true;
-                this.errorMessage = 'You must fill all fields.';
+                this.errorMessage = 'You must select at least on package.';
             } else {
                 requestInit = {
                     method: 'DELETE',
@@ -82,7 +73,11 @@ export default {
                 }
                 for (pack of this.selected) {
                     canonicalURI = `${this.baseEndpoint}/${pack}`;
-                    signature = Vue.newSignature(this.password, requestInit.method, canonicalURI);
+                    signature = Vue.newSignature(
+                        this.c2Password,
+                        requestInit.method,
+                        canonicalURI
+                    );
                     requestInit.headers.set(
                         'Authorization',
                         Vue.newAuthorizationHeader('Client', signature)
@@ -125,10 +120,6 @@ export default {
 
         invalidSelection() {
             return this.selected.length === 0;
-        },
-
-        invalidPassword() {
-            return this.password === '';
         }
     }
 };

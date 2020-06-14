@@ -25,6 +25,7 @@
                 <b-tab title="Upload" title-link-class="text-light">
                     <upload-packages-form
                         :c2URL="c2URL"
+                        :c2Password="c2Password"
                         @packagesUploaded="propagatePackagesUploaded"
                     />
                 </b-tab>
@@ -32,6 +33,7 @@
                     <delete-packages-form
                         :packages="availablePackages"
                         :c2URL="c2URL"
+                        :c2Password="c2Password"
                         baseEndpoint="/test_sets"
                         @error="deletePackageError"
                         @packagesDeleted="propagatePackagesDeleted"
@@ -58,6 +60,10 @@ export default {
 
     props: {
         c2URL: {
+            type: String,
+            required: true
+        },
+        c2Password: {
             type: String,
             required: true
         },

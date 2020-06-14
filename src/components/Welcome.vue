@@ -2,7 +2,7 @@
     <b-container fluid class="pt-5 px-0">
         <img alt="Secchiware logo" src="../assets/secchiware_logo.png">
         <h1 class="my-5 mx-auto">Welcome to Secchiware Desktop Client!</h1>
-        <command-control-url-form @newC2URLProvided="propagateURLProvided" />
+        <command-control-url-form @newC2ConfigurationProvided="propagateConfigurationProvided" />
     </b-container>
 </template>
 
@@ -17,8 +17,8 @@ export default {
     },
 
     methods: {
-        propagateURLProvided(c2URL) {
-            this.$emit('newC2URLProvided', c2URL);
+        propagateConfigurationProvided(c2URL, c2Password) {
+            this.$emit('newC2ConfigurationProvided', c2URL, c2Password);
         }
     }
 }

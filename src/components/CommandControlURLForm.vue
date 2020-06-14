@@ -18,11 +18,22 @@
                             @focus="clearStatus"
                             @keypress="clearStatus"
                         />
-                    </b-form-group>      
+                    </b-form-group>
+                    <b-form-group
+                        id="c2-password-fieldset"
+                        label="Password"
+                        label-for="c2-password"
+                    >
+                        <b-form-input
+                            id="c2-password"
+                            type="password"
+                            v-model="c2Password"
+                        />
+                    </b-form-group> 
                     <b-alert v-model="error" variant="danger" dismissible class="mb-4">
                         {{ this.errorMessage }}
                     </b-alert>
-                    <b-button type="submit" variant="light">Start!</b-button>
+                    <b-button class="mt-3" type="submit" variant="light">Start!</b-button>
                 </b-form>
             </b-col>
         </b-row>
@@ -37,7 +48,8 @@ export default {
         return {
             error: false,
             errorMessage: '',
-            c2URL: ''
+            c2URL: '',
+            c2Password: ''
         };
     },
 
@@ -45,11 +57,11 @@ export default {
         handleSubmit() {
             this.clearStatus();
 
-            if (this.invalidURL) {
+            if (this.invalidURL || this.invalidURL) {
                 this.error = true;
-                this.errorMessage = 'You must provide an URL.';
+                this.errorMessage = 'You must complete all fields.';
             } else
-                this.$emit('newC2URLProvided', this.c2URL);
+                this.$emit('newC2ConfigurationProvided', this.c2URL, this.c2Password);
         },
 
         clearStatus() {
@@ -61,6 +73,10 @@ export default {
     computed: {
         invalidURL() {
             return this.c2URL === '';
+        },
+
+        invalidPassword() {
+            return this.c2Password === '';
         }
     }
 }

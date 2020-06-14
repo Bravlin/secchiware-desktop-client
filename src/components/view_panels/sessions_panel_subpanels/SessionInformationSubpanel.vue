@@ -1,35 +1,48 @@
 <template>
-    <div>
-        <div><b-button @click="goBack">Back</b-button></div>
-        <b-card v-if="sessionInfo" title="Session's information" align="left">
+    <b-container fluid class="p-5">
+        <b-icon-arrow-left class="back-button" @click="goBack" />
+        <b-card
+            v-if="sessionInfo"
+            title="Session's information"
+            align="left"
+            class="session-information-card mx-auto mt-3"
+        >
             <b-card-text>ID: {{ sessionInfo.session_id }}</b-card-text>
             <b-card-text>Status: {{ isActive ? 'Active' : 'Closed' }}</b-card-text>
             <b-card-text>Start: {{ sessionInfo.session_start }}</b-card-text>
             <b-card-text v-if="!isActive">End: {{ sessionInfo.session_end }}</b-card-text>
             <platform-information :platform="sessionInfo.platform_info" />
         </b-card>
-        <b-card-group deck>
-            <b-card
+        <h3 class="background-title mt-5">Executions</h3>
+        <b-row align-h="around">
+            <b-col
+                class="mt-3"
+                cols="12"
+                lg="6"
                 v-for="execution in sessionExecutions"
                 :key="execution.execution_id"
-                :title="`Execution ${execution.execution_id}`"
-                align="left"
             >
-                <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
-                    <b-tab title="Information" title-link-class="text-light" active>
-                        <b-card-text>Execution's ID: {{ execution.execution_id }}</b-card-text>
-                        <b-card-text>
-                            Register time: {{ execution.timestamp_registered }}
-                        </b-card-text>
-                        <b-card-text>Total reports: {{ execution.reports.length }}</b-card-text>
-                    </b-tab>
-                    <b-tab title="Reports" title-link-class="text-light">
-                        <reports :reports="execution.reports" />
-                    </b-tab>
-                </b-tabs>
-            </b-card>
-        </b-card-group>
-    </div>
+                <b-card :title="`Execution ${execution.execution_id}`" align="left">
+                    <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                        <b-tab title="Information" title-link-class="text-light" active>
+                            <b-card-text>
+                                Execution's ID: {{ execution.execution_id }}
+                            </b-card-text>
+                            <b-card-text>
+                                Register time: {{ execution.timestamp_registered }}
+                            </b-card-text>
+                            <b-card-text>
+                                Total reports: {{ execution.reports.length }}
+                            </b-card-text>
+                        </b-tab>
+                        <b-tab title="Reports" title-link-class="text-light">
+                            <reports :reports="execution.reports" />
+                        </b-tab>
+                    </b-tabs>
+                </b-card>
+            </b-col>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -123,3 +136,23 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.session-information-card {
+    max-width: 800px;
+}
+
+.background-title {
+    color: white;
+}
+
+.back-button {
+    color: white;
+    font-size: 2.5rem;
+}
+
+.back-button:hover {
+    color:gray;
+    cursor: pointer;
+}
+</style>

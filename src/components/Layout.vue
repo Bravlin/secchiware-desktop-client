@@ -69,6 +69,10 @@ export default {
         c2URL: {
             type: String,
             required: true
+        },
+        c2Password: {
+            type: String,
+            required: true
         }
     },
 
@@ -145,18 +149,21 @@ export default {
                 case 'command-control-panel':
                     return {
                         c2URL: this.c2URL,
+                        c2Password: this.c2Password,
                         environments: this.environments,
                         availablePackages: this.availablePackages
                     };
                 case 'environments-panel':
                     return {
                         c2URL: this.c2URL,
+                        c2Password: this.c2Password,
                         envs: this.environments,
                         availablePackages: this.availablePackages
                     };
                 case 'sessions-panel':
                     return {
-                        c2URL: this.c2URL
+                        c2URL: this.c2URL,
+                        c2Password: this.c2Password
                     }
                 default:
                     return null;

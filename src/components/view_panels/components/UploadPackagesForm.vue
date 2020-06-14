@@ -11,24 +11,12 @@
                 :state="Boolean(packagesToUpload)"
                 accept=".tar.gz"
                 placeholder="Choose or drop here a tar.gz file..."
-            ></b-form-file>
-        </b-form-group>
-        <b-form-group
-            id="upload-packages-password-fieldset"
-            label="Password"
-            label-for="upload-packages-password"
-            label-align="left"
-        >
-            <b-form-input
-                id="upload-packages-password"
-                type="password"
-                v-model="password"
-            ></b-form-input>
+            />
         </b-form-group>
         <b-alert v-model="error" variant="danger" dismissible>
             {{ this.errorMessage }}
         </b-alert>
-        <b-button type="submit" variant="dark">Upload</b-button>
+        <b-button type="submit" variant="dark" class="mt-3">Upload</b-button>
     </b-form>
 </template>
 
@@ -43,6 +31,10 @@ export default {
         c2URL: {
             type: String,
             required: true
+        },
+        c2Password: {
+            type: String,
+            required: true
         }
     },
 
@@ -51,7 +43,6 @@ export default {
             error: false,
             errorMessage: '',
             packagesToUpload: null,
-            password: '',
         };
     },
 
@@ -63,9 +54,9 @@ export default {
 
             this.clearStatus();
 
-            if (this.invalidFile || this.invalidPassword) {
+            if (this.invalidFile) {
                 this.error = true;
-                this.errorMessage = 'You must fill all fields.';
+                this.errorMessage = 'You must provide a file.';
             } else {
                 requestBody = new FormData();
                 requestBody.append('packages', this.packagesToUpload);
@@ -78,7 +69,7 @@ export default {
                 actualRequest.headers.append('Digest', `sha-256=${digest}`);
 
                 signature = Vue.newSignature(
-                    this.password,
+                    this.c2Password,
                     preparedRequest.method,
                     '/test_sets',
                     {
@@ -121,10 +112,6 @@ export default {
     computed: {
         invalidFile() {
             return this.packagesToUpload == null;
-        },
-
-        invalidPassword() {
-            return this.password === '';
         }
     }
 };

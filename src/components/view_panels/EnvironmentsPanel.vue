@@ -1,7 +1,7 @@
 <template>
     <b-container fluid>
         <b-row style="height: 100%">
-            <b-col id="environments-list" cols="5" md="4" lg="3" xl="2">
+            <b-col id="environments-list" cols="5" md="3" lg="3" xl="2">
                 <h5>Registered environments</h5>
                 <b-form-radio-group
                     v-model="selectedEnv"
@@ -9,7 +9,7 @@
                     stacked
                 />
             </b-col>
-            <b-col cols="7" md="8" lg="9" xl="10" class="p-5">
+            <b-col cols="7" md="9" lg="9" xl="10" class="p-5">
                 <b-card-group columns>
                     <b-card
                         title="Environment information"
@@ -33,6 +33,7 @@
                             <b-tab title="Install" title-link-class="text-light">
                                 <install-packages-form
                                     :c2URL="c2URL"
+                                    :c2Password="c2Password"
                                     :c2AvailablePackages="availablePackages"
                                     :envIP="selectedEnv.ip"
                                     :envPort="selectedEnv.port"
@@ -43,6 +44,7 @@
                                 <delete-packages-form
                                     :packages="installedPackages"
                                     :c2URL="c2URL"
+                                    :c2Password="c2Password"
                                     :baseEndpoint="`/environments/${selectedEnv.ip}/${selectedEnv.port}/installed`"
                                     @error="uninstallPackageError"
                                     @packagesDeleted="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
@@ -109,6 +111,10 @@ export default {
         c2URL: {
             type: String,
             required: true,
+        },
+        c2Password: {
+            type: String,
+            required: true
         },
         envs: {
             type: Array,

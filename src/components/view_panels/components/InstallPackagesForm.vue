@@ -9,24 +9,10 @@
                         v-model="selected"
                         :options="packagesOptions"
                         name="available-package"
+                        stacked
                     />
                 </b-col>
                 <b-col cols="6" class="text-center py-3">
-                    <b-form-group
-                        id="install-packages-password-fieldset"
-                        label="Password"
-                        label-for="install-packages-password"
-                        label-cols="5"
-                        label-cols-md="4"
-                        label-cols-xl="3"
-                        label-align="right"
-                    >
-                        <b-form-input
-                            id="install-packages-password"
-                            type="password"
-                            v-model="password"
-                        />
-                    </b-form-group>
                     <b-alert v-model="error" variant="danger" dismissible>
                         {{ this.errorMessage }}
                     </b-alert>
@@ -47,7 +33,6 @@ export default {
     data() {
         return {
             selected: [],
-            password: '',
             error: false,
             errorMessage: ''
         };
@@ -55,6 +40,10 @@ export default {
 
     props: {
         c2URL: {
+            type: String,
+            required: true
+        },
+        c2Password: {
             type: String,
             required: true
         },
@@ -79,9 +68,9 @@ export default {
 
             this.clearStatus();
 
-            if (this.invalidSelection || this.invalidPassword) {
+            if (this.invalidSelection) {
                 this.error = true;
-                this.errorMessage = 'You must fill all fields.';
+                this.errorMessage = 'You must select at least one package.';
             } else {
                 preparedRequest = new Request (
                     this.c2URL + canonicalURL,
@@ -99,7 +88,7 @@ export default {
                 actualRequest.headers.append('Digest', `sha-256=${digest}`);
 
                 signature = Vue.newSignature(
-                    this.password,
+                    this.c2Password,
                     preparedRequest.method,
                     canonicalURL,
                     {
@@ -132,7 +121,9 @@ export default {
                             alert('Unexpected response from Command and Control server.');
                     }
                 } catch (err) {
-                    alert('Something went wrong trying to contact the Command and Control server.');
+                    alert(
+                        'Something went wrong trying to contact the Command and Control server.'
+                    );
                 }
             }
         },
@@ -154,10 +145,6 @@ export default {
 
         invalidSelection() {
             return this.selected.length === 0;
-        },
-
-        invalidPassword() {
-            return this.password === '';
         }
     }
 };
