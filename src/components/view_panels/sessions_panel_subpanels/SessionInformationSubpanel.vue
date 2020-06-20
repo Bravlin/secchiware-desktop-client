@@ -12,6 +12,9 @@
             <b-card-text>Start: {{ sessionInfo.session_start }}</b-card-text>
             <b-card-text v-if="!isActive">End: {{ sessionInfo.session_end }}</b-card-text>
             <platform-information :platform="sessionInfo.platform_info" />
+            <b-button variant="danger" class="mt-4" @click="deleteSession">
+                Delete session
+            </b-button>
         </b-card>
         <h3 class="background-title mt-5">Executions</h3>
         <b-row align-h="around">
@@ -48,6 +51,7 @@
 <script>
 import PlatformInformation from '../components/PlatformInformation.vue';
 import Reports from '../components/Reports.vue';
+import Vue from 'vue';
 
 export default {
     name: 'session-information-subpanel',
@@ -66,6 +70,10 @@ export default {
 
     props: {
         c2URL: {
+            type: String,
+            required: true
+        },
+        c2Password: {
             type: String,
             required: true
         },
@@ -121,6 +129,57 @@ export default {
 
         goBack() {
             this.$emit('back');
+        },
+
+        async deleteSession() {
+            var proceed = await this.$bvModal.msgBoxConfirm(
+                'Deleting a session will remove all its associated information and executions. '
+                + 'Are you sure you want to continue?',
+                {
+                    okVariant: 'danger',
+                    okTitle: 'Delete',
+                    centered: true
+                }
+            );
+            if (proceed) {
+                let requestInit, canonicalURI, signature;
+                canonicalURI = `/sessions/${this.sessionID}`;
+                signature = Vue.newSignature(
+                    this.c2Password,
+                    'DELETE',
+                    canonicalURI
+                );
+                requestInit = {
+                    method: 'DELETE',
+                    headers: {'Authorization': Vue.newAuthorizationHeader('Client', signature)}
+                };
+                try {
+                    let response = await fetch(`${this.c2URL}${canonicalURI}`, requestInit);
+                    switch (response.status) {
+                        case 404:
+                            alert((await response.json()).error);
+                            /* falls through */
+                        case 204:
+                            this.$emit('sessionDeleted', this.sessionID);
+                            break;
+                        case 400:
+                        case 401:
+                            alert((await response.json()).error);
+                            break;
+                        default:
+                            alert(
+                                'Unexpected response from Command and Control server when trying '
+                                + 'to delete the session.'
+                            );
+                    }
+                } catch (err) {
+                    alert(
+                        'Something went wrong when trying to contact the Command and Control '
+                        + 'server trying to delete the session.'
+                    );
+                }
+                
+            }
         }
     },
 

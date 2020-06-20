@@ -131,34 +131,38 @@
                 </b-form>
             </b-col>
             <b-col cols="8" lg="9" xl="10" class="p-5 overflowable">
-                <h3 class="background-title">Search results</h3>
-                <b-row align-h="around">
-                    <b-card
-                        align="left"
-                        v-for="sr of searchResults"
-                        :key="sr.session_id"
-                        :title="`ID: ${sr.session_id}`"
-                        cols="12"
-                        md="6"
-                        lg="3"
-                        xl="2"
-                        class="m-3 search-item-card"
-                    >
-                        <b-card-text>
-                            Status: {{ sr.hasOwnProperty('session_end') ? 'Closed' : 'Active'}}
-                        </b-card-text>
-                        <b-card-text>Start: {{ sr.session_start }}</b-card-text>
-                        <b-card-text v-if="sr.hasOwnProperty('session_end')">
-                            End: {{ sr.session_end }}
-                        </b-card-text>
-                        <b-card-text>Environment's IP: {{ sr.ip }}</b-card-text>
-                        <b-card-text>Environment's port: {{ sr.port }}</b-card-text>
-                        <b-card-text>
-                            Environment's platform: {{ sr.platform_os_system }}
-                        </b-card-text>
-                        <b-button @click="requestDetails(sr.session_id)">Details</b-button>
-                    </b-card>
-                </b-row>
+                <b-card title="Search results">
+                    <b-table-simple hover striped small stacked="lg">
+                        <b-thead head-variant="dark">
+                            <b-tr>
+                                <b-th>ID</b-th>
+                                <b-th>Start</b-th>
+                                <b-th>End</b-th>
+                                <b-th>IP</b-th>
+                                <b-th>Port</b-th>
+                                <b-th>OS</b-th>
+                                <b-th></b-th>
+                            </b-tr>
+                        </b-thead>
+                        <b-tbody>
+                            <b-tr v-for="sr of searchResults" :key="sr.session_id">
+                                <b-th stacked-heading="ID">{{ sr.session_id }}</b-th>
+                                <b-th stacked-heading="Start">{{ sr.session_start }}</b-th>
+                                <b-th stacked-heading="End">
+                                    {{ sr.hasOwnProperty('session_end') ?  sr.session_end : '-' }}
+                                </b-th>
+                                <b-th stacked-heading="IP">{{ sr.ip }}</b-th>
+                                <b-th stacked-heading="Port">{{ sr.port }}</b-th>
+                                <b-th stacked-heading="OS">{{ sr.platform_os_system }}</b-th>
+                                <b-th>
+                                    <b-button @click="requestDetails(sr.session_id)">
+                                        Details
+                                    </b-button>
+                                </b-th>
+                            </b-tr>
+                        </b-tbody>
+                    </b-table-simple>
+                </b-card>
             </b-col>
         </b-row>
     </b-container>
@@ -171,6 +175,10 @@ export default {
     props: {
         c2URL: {
             type: String,
+            required: true
+        },
+        eventBus: {
+            type: Object,
             required: true
         }
     },
@@ -192,6 +200,12 @@ export default {
             },
             searchResults: null
         }
+    },
+
+    created() {
+        this.eventBus.$on('sessionDeleted', sessionID => {
+            this.searchResults = this.searchResults.filter(sr => sr.session_id != sessionID);
+        });
     },
 
     methods: {
@@ -233,7 +247,7 @@ export default {
 
         requestDetails(sessionID) {
             this.$emit('detailsRequested', sessionID);
-        }
+        },
     }
 };
 </script>
@@ -252,9 +266,5 @@ export default {
 .search-item-card {
     width: 255px;
     height: 400px;
-}
-
-.background-title {
-    color: white;
 }
 </style>

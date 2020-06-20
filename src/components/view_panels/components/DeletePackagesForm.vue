@@ -58,8 +58,7 @@ export default {
 
     methods: {
         async handleSubmit() {
-            var pack, requestInit, canonicalURI, signature, response;
-            var deleted = false;
+            var pack, requestInit, canonicalURI, signature, response, deleted;
             
             this.clearStatus();
 
@@ -90,8 +89,10 @@ export default {
                             alert(`Package '${pack}' does not exist`)
                             deleted = true;
                         }
-                        else if (response.status != 204)
+                        else {
                             this.$emit('error', response);
+                            deleted = false;
+                        }
                     } catch (err) {
                         alert('Something went wrong when trying to contact the Command and Control server.');
                     }
