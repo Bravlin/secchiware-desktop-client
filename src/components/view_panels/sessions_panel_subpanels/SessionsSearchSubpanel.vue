@@ -85,7 +85,11 @@
                         label="Order by"
                         label-for="search-order"
                     >
-                        <b-form-select id="search-order" v-model="searchFields.order_by">
+                        <b-form-select
+                            id="search-order"
+                            v-model="searchFields.order_by"
+                            @change="handleOrderByChange"
+                        >
                             <b-form-select-option :value="null">
                                 Select an option
                             </b-form-select-option>
@@ -109,7 +113,7 @@
                         <b-form-select
                             id="search-arrange"
                             v-model="searchFields.arrange"
-                            :disabled="searchFields.order_by == null"
+                            :disabled="!searchFields.order_by"
                         >
                             <b-form-select-option value="asc">Ascending</b-form-select-option>
                             <b-form-select-option value="desc">Descending</b-form-select-option>
@@ -124,7 +128,21 @@
                             id="search-limit"
                             type="number"
                             v-model="searchFields.limit"
+                            min="1"
+                            @change="handleLimitChange"
+                        />
+                    </b-form-group>
+                    <b-form-group
+                        id="offset"
+                        label="Offset"
+                        label-for="search-offset"
+                    >
+                        <b-form-input
+                            id="search-offset"
+                            type="number"
+                            v-model="searchFields.offset"
                             min="0"
+                            :disabled="!searchFields.limit"
                         />
                     </b-form-group>
                     <b-button type="submit" variant="light" class="mt-2">Search</b-button>
@@ -196,7 +214,8 @@ export default {
                 systems: null,
                 order_by: null,
                 arrange: null,
-                limit: null
+                limit: null,
+                offset: null
             },
             searchResults: null
         }
@@ -209,6 +228,16 @@ export default {
     },
 
     methods: {
+        handleOrderByChange() {
+            if (!this.searchFields.order_by)
+                this.searchFields.arrange = null;
+        },
+
+        handleLimitChange() {
+            if (!this.searchFields.limit)
+                this.searchFields.offset = null;
+        },
+
         async search() {
             var key, value;
             var query = '';

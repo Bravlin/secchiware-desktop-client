@@ -221,7 +221,6 @@ export default {
                                 e => e.execution_id != executionID
                             );
                             break;
-                        case 400:
                         case 401:
                             alert((await response.json()).error);
                             break;
