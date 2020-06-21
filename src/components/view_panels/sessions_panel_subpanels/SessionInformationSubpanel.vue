@@ -11,8 +11,8 @@
             <b-card-text>Status: {{ isActive ? 'Active' : 'Closed' }}</b-card-text>
             <b-card-text>Start: {{ sessionInfo.session_start }}</b-card-text>
             <b-card-text v-if="!isActive">End: {{ sessionInfo.session_end }}</b-card-text>
-            <platform-information :platform="sessionInfo.platform_info" />
-            <b-button variant="danger" class="mt-4" @click="deleteSession">
+            <platform-information :platform="sessionInfo.platform_info" :verticalMarginBetween="3" />
+            <b-button variant="danger" class="mt-3" @click="deleteSession">
                 Delete session
             </b-button>
         </b-card>
@@ -28,7 +28,7 @@
                 <b-card :title="`Execution ${execution.execution_id}`" align="left">
                     <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
                         <b-tab title="Information" title-link-class="text-light" active>
-                            <b-card-text>
+                            <b-card-text class="mt-3">
                                 Execution's ID: {{ execution.execution_id }}
                             </b-card-text>
                             <b-card-text>
@@ -37,6 +37,13 @@
                             <b-card-text>
                                 Total reports: {{ execution.reports.length }}
                             </b-card-text>
+                            <b-button
+                                variant="danger"
+                                class="mt-3"
+                                @click="deleteExecution(execution.execution_id)"
+                            >
+                                Delete execution
+                            </b-button>
                         </b-tab>
                         <b-tab title="Reports" title-link-class="text-light">
                             <reports :reports="execution.reports" />
@@ -178,7 +185,58 @@ export default {
                         + 'server trying to delete the session.'
                     );
                 }
-                
+            }
+        },
+
+        async deleteExecution(executionID) {
+            var proceed = await this.$bvModal.msgBoxConfirm(
+                'Deleting an execution will remove all its associated information and reports. '
+                + 'Are you sure you want to continue?',
+                {
+                    okVariant: 'danger',
+                    okTitle: 'Delete',
+                    centered: true
+                }
+            );
+            if (proceed) {
+                let requestInit, canonicalURI, signature;
+                canonicalURI = `/executions/${executionID}`;
+                signature = Vue.newSignature(
+                    this.c2Password,
+                    'DELETE',
+                    canonicalURI
+                );
+                requestInit = {
+                    method: 'DELETE',
+                    headers: {'Authorization': Vue.newAuthorizationHeader('Client', signature)}
+                };
+                try {
+                    let response = await fetch(`${this.c2URL}${canonicalURI}`, requestInit);
+                    switch (response.status) {
+                        case 404:
+                            alert((await response.json()).error);
+                            /* falls through */
+                        case 204:
+                            this.sessionExecutions = this.sessionExecutions.filter(
+                                e => e.execution_id != executionID
+                            );
+                            break;
+                        case 400:
+                        case 401:
+                            alert((await response.json()).error);
+                            break;
+                        default:
+                            alert(
+                                'Unexpected response from Command and Control server when trying '
+                                + 'to delete the execution.'
+                            );
+                    }
+                } catch (err) {
+                    alert(
+                        'Something went wrong when trying to contact the Command and Control '
+                        + 'server trying to delete the execution.'
+                    );
+                }
             }
         }
     },

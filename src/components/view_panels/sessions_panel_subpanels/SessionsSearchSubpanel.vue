@@ -132,7 +132,7 @@
             </b-col>
             <b-col cols="8" lg="9" xl="10" class="p-5 overflowable">
                 <b-card title="Search results">
-                    <b-table-simple hover striped small stacked="lg">
+                    <b-table-simple v-if="searchResults" hover striped small stacked="lg">
                         <b-thead head-variant="dark">
                             <b-tr>
                                 <b-th>ID</b-th>

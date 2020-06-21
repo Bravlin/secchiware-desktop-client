@@ -1,7 +1,15 @@
 <template>
     <b-container fluid>
         <b-row style="height: 100%">
-            <b-col id="environments-list" v-if="environments" cols="5" md="3" lg="3" xl="2">
+            <b-col
+                id="environments-list"
+                v-if="environments"
+                class="py-3"
+                cols="5"
+                md="3"
+                lg="3"
+                xl="2"
+            >
                 <h5>Registered environments</h5>
                 <b-form-radio-group
                     v-model="selectedEnv"
@@ -17,10 +25,10 @@
                         v-if="selectedEnv && envPlatform"
                     >
                         <div>IP: {{ selectedEnv.ip }}</div>
-                        <div>Port: {{ selectedEnv.port }}</div>
-                        <div>Session ID: {{ selectedEnv.session_id }}</div>
-                        <div>Session start: {{ selectedEnv.session_start }}</div>
-                        <platform-information :platform="envPlatform" />
+                        <div class="mt-3">Port: {{ selectedEnv.port }}</div>
+                        <div class="mt-3">Session ID: {{ selectedEnv.session_id }}</div>
+                        <div class="my-3">Session start: {{ selectedEnv.session_start }}</div>
+                        <platform-information :platform="envPlatform" :verticalMarginBetween="3" />
                     </b-card>
                     <b-card v-if="selectedEnv" title="Tests management" align="left">
                         <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
