@@ -2,7 +2,10 @@
     <b-container fluid>
         <b-row>
             <b-col class="black-background p-3" cols="4">
-                <h5>Root packages</h5>
+                <h5>
+                    Root packages
+                    <b-icon-arrow-repeat class="clickable" @click="refreshPackages" />
+                </h5>
                 <b-form-radio-group v-model="selected" :options="rootOptions" stacked />
             </b-col>
             <b-col class="p-3" cols="8">
@@ -36,12 +39,18 @@ export default {
         }
     },
 
+    methods: {
+        refreshPackages() {
+            this.$emit('packagesRefreshRequested');
+        }
+    },
+
     computed: {
         rootOptions() {
-            let options = [];
-            this.packages.forEach(pack => {
+            var options = [];
+            var pack;
+            for (pack of this.packages)
                 options.push({text: pack.name, value: pack});
-            });
             return options;
         }
     }
@@ -52,5 +61,10 @@ export default {
 .black-background {
     background-color: rgb(51, 51, 51);
     color: white;
+}
+
+.clickable:hover {
+    color: grey;
+    cursor: pointer;
 }
 </style>

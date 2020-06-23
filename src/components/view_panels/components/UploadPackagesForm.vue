@@ -13,19 +13,21 @@
                 placeholder="Choose or drop here a tar.gz file..."
             />
         </b-form-group>
-        <b-alert v-model="error" variant="danger" dismissible>
-            {{ this.errorMessage }}
-        </b-alert>
-        <b-button type="submit" variant="dark" class="mt-3">Upload</b-button>
+        <b-button type="submit" variant="dark" class="mt-3" :disabled="!packagesToUpload">
+            Upload
+        </b-button>
     </b-form>
 </template>
 
 <script>
-import Vue from 'vue';
-const crypto = require('crypto');
+import modals from '../../../mixins/modals.js'
+import crypto from 'crypto';
+import signatures from '../../../scripts/signatures.js'
 
 export default {
     name: 'upload-packages-form',
+
+    mixins: [modals],
 
     props: {
         c2URL: {
@@ -39,11 +41,7 @@ export default {
     },
 
     data() {
-        return {
-            error: false,
-            errorMessage: '',
-            packagesToUpload: null,
-        };
+        return {packagesToUpload: null};
     },
 
     methods: {
@@ -52,12 +50,9 @@ export default {
             var preparedRequest, actualRequest, requestBody;
             var hasher, digest, signature;
 
-            this.clearStatus();
-
-            if (this.invalidFile) {
-                this.error = true;
-                this.errorMessage = 'You must provide a file.';
-            } else {
+            if (!this.packagesToUpload)
+                this.showErrorModal('You must provide a file.');
+            else {
                 requestBody = new FormData();
                 requestBody.append('packages', this.packagesToUpload);
                 preparedRequest = new Request(url, {method: 'PATCH', body: requestBody});
@@ -68,7 +63,7 @@ export default {
                 digest = hasher.digest('base64');
                 actualRequest.headers.append('Digest', `sha-256=${digest}`);
 
-                signature = Vue.newSignature(
+                signature = signatures.newSignature(
                     this.c2Password,
                     preparedRequest.method,
                     '/test_sets',
@@ -79,7 +74,7 @@ export default {
                 );
                 actualRequest.headers.set(
                     'Authorization',
-                    Vue.newAuthorizationHeader('Client', signature, ['Digest'])
+                    signatures.newAuthorizationHeader('Client', signature, ['Digest'])
                 );
 
                 try {
@@ -87,32 +82,28 @@ export default {
                     switch (response.status) {
                         case 204:
                             this.$emit('packagesUploaded');
-                            alert('Packages uploaded!');
+                            this.showSuccessModal('Packages uploaded!');
+                            this.packagesToUpload = null;
                             break;
                         case 400:
                         case 401:
                         case 415:
-                            alert((await response.json()).error);
+                            this.showErrorModal((await response.json()).error);
                             break;
                         default:
-                            alert('Unexpected response from Command and Control server.');
+                            this.showErrorModal(
+                                'Unexpected response from Command and Control server when trying '
+                                + 'to upload packages.'
+                            );
                     }
                 } catch (err) {
-                    alert('Something went wrong trying to contact the Command and Control server.');
+                    this.showErrorModal(
+                        'Something went wrong trying to contact the Command and Control server '
+                        + 'to upload some packages. Please, verify that the application is '
+                        + 'correctly configured.');
                 }
             }
         },
-
-        clearStatus() {
-            this.error = false;
-            this.errorMessage = '';
-        }
-    },
-
-    computed: {
-        invalidFile() {
-            return this.packagesToUpload == null;
-        }
     }
 };
 </script>

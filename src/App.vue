@@ -1,6 +1,11 @@
 <template>
     <div id="app">
-        <layout v-if="c2URL" :c2URL="c2URL" :c2Password="c2Password" />
+        <layout
+            v-if="c2URL"
+            :c2URL="c2URL"
+            :c2Password="c2Password"
+            @newC2Configuration="setC2Configuration"
+        />
         <welcome v-else @newC2ConfigurationProvided="setC2Configuration" />
     </div>
 </template>

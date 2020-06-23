@@ -31,7 +31,6 @@
         </div>
         <component
             :is="currentPanel"
-            v-if="panelConditions"
             v-bind="panelProps"
             v-on="panelEvents"
             class="main-content flex-grow-1"
@@ -58,9 +57,8 @@ export default {
 
     data() {
         return {
-            availablePackages: null,
-            currentPanel: 'command-control-panel',
-            eventSource: null
+            availablePackages: [],
+            currentPanel: 'command-control-panel'
         };
     },
 
@@ -84,46 +82,49 @@ export default {
             try {
                 let response = await fetch(`${this.c2URL}/test_sets`);
                 if (response.status != 200)
-                    alert("Unexpected response from the Command an Control server when trying to recover its available tests.");
+                    this.$bvModal.msgBoxOk(
+                        'Unexpected response from the Command an Control server when trying to '
+                        + 'recover its available tests.'
+                    );
                 else
                     this.availablePackages = await response.json();
             } catch (err) {
-                alert("Something went wrong when trying to recover the tests available at the Command and Control server.");
+                this.$bvModal.msgBoxOk(
+                    'Something went wrong when trying to recover the tests available at the '
+                    + 'Command and Control server. Please, verify that the application is '
+                    + 'correctly configured.'
+                );
             }
+        },
+
+        removePackages(deletedPackages) {
+            this.availablePackages = this.availablePackages.filter(
+                pack => !deletedPackages.has(pack.name)
+            );
         },
 
         newC2URL(c2URL) {
             this.c2URL = c2URL;
             this.setAvailablePackages();
-            if (this.eventSource)
-                this.eventSource.close();
         },
+
+        propagateNewC2Configuration(c2URL, c2Password) {
+            this.$emit('newC2Configuration', c2URL, c2Password);
+        }
     },
 
     computed: {
-        panelConditions() {
-            return this.currentPanel === 'command-control-panel' ? this.availablePackages : true;
-        },
-
         panelProps() {
+            var props = {};
             switch (this.currentPanel) {
                 case 'command-control-panel':
-                    return {
-                        c2URL: this.c2URL,
-                        c2Password: this.c2Password,
-                        availablePackages: this.availablePackages
-                    };
                 case 'environments-panel':
-                    return {
-                        c2URL: this.c2URL,
-                        c2Password: this.c2Password,
-                        availablePackages: this.availablePackages
-                    };
+                    props.availablePackages = this.availablePackages;
+                    // falls through
                 case 'sessions-panel':
-                    return {
-                        c2URL: this.c2URL,
-                        c2Password: this.c2Password
-                    }
+                    props.c2URL = this.c2URL;
+                    props.c2Password = this.c2Password
+                    return props;
                 default:
                     return null;
             }
@@ -135,8 +136,9 @@ export default {
                     return {connected: this.newConnection};
                 case 'command-control-panel':
                     return {
-                        packagesDeleted: this.setAvailablePackages,
-                        packagesUploaded: this.setAvailablePackages,
+                        packagesRefreshRequested: this.setAvailablePackages,
+                        packagesDeleted: this.removePackages,
+                        newC2Configuration: this.propagateNewC2Configuration
                     };
                 default:
                     return null;
@@ -145,7 +147,8 @@ export default {
     },
 
     created() {
-        this.setAvailablePackages();    }
+        this.setAvailablePackages();
+    }
 };
 </script>
 
