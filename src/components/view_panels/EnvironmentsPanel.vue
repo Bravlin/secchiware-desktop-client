@@ -4,20 +4,23 @@
             <b-col
                 id="environments-list"
                 v-if="environments"
-                class="py-3"
+                class="py-3 overflowable"
                 cols="5"
                 md="3"
                 lg="3"
                 xl="2"
             >
-                <h5>Registered environments</h5>
+                <h5>
+                    Registered environments
+                    <b-icon-arrow-repeat class="clickable" @click="setEnvironments" />
+                </h5>
                 <b-form-radio-group
                     v-model="selectedEnv"
                     :options="environmentsListOptions"
                     stacked
                 />
             </b-col>
-            <b-col cols="7" md="9" lg="9" xl="10" class="p-5">
+            <b-col cols="7" md="9" lg="9" xl="10" class="p-5 overflowable">
                 <b-card-group columns>
                     <b-card
                         title="Environment information"
@@ -36,6 +39,7 @@
                                 <test-packages
                                     v-if="installedPackages"
                                     :packages="installedPackages" 
+                                    @packagesRefreshRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
                                 />
                             </b-tab>
                             <b-tab title="Install" title-link-class="text-light">
@@ -45,6 +49,7 @@
                                     :c2AvailablePackages="availablePackages"
                                     :envIP="selectedEnv.ip"
                                     :envPort="selectedEnv.port"
+                                    @refreshAvailablePackagesRequested="propagateAvailablePackagesRefreshRequested"
                                     @packagesInstalled="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
                                 />
                             </b-tab>
@@ -55,7 +60,8 @@
                                     :c2Password="c2Password"
                                     :baseEndpoint="`/environments/${selectedEnv.ip}/${selectedEnv.port}/installed`"
                                     @error="uninstallPackageError"
-                                    @packagesDeleted="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                                    @packagesDeleted="removePackages"
+                                    @packagesRefreshRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
                                 />
                             </b-tab>
                         </b-tabs>
@@ -69,6 +75,7 @@
                                     :port="selectedEnv.port"
                                     :installedPackages="installedPackages"
                                     @reportsRecovered="setReports"
+                                    @refreshPackagesRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
                                 />
                             </b-tab>
                             <b-tab
@@ -91,11 +98,14 @@ import PlatformInformation from './components/PlatformInformation.vue';
 import TestPackages from './components/TestPackages.vue';
 import DeletePackagesForm from './components/DeletePackagesForm';
 import InstallPackagesForm from './components/InstallPackagesForm';
-import Reports from './components/Reports.vue'
-import ExecuteTests from './components/ExecuteTests'
+import Reports from './components/Reports.vue';
+import ExecuteTests from './components/ExecuteTests';
+import modals from '../../mixins/modals.js';
 
 export default {
     name: 'environments-panel',
+
+    mixins: [modals],
 
     components: {
         'platform-information': PlatformInformation,
@@ -132,29 +142,33 @@ export default {
     },
 
     methods: {
+        propagateAvailablePackagesRefreshRequested() {
+            this.$emit('packagesRefreshRequested');
+        },
+
         async setEnvironments() {
             try {
                 let response = await fetch(`${this.c2URL}/environments`);
                 if (response.status != 200)
-                    alert(
+                    this.showErrorModal(
                         'Unexpected response from the Command an Control server when trying to '
                         + 'recover its connected environments.'
                     );
                 else
                     this.environments = await response.json();
             } catch (err) {
-                alert(
+                this.showErrorModal(
                     'Something went wrong when trying to recover the environments connected to '
-                    + 'the Command and Control server.'
+                    + 'the Command and Control server. Please, verify that the application is '
+                    + 'correctly configured.'
                 );
             }
         },
 
         async setInstalledPackages(ip, port) {
-            var response;
             this.installedPackages = [];
             try {
-                response = await fetch(`${this.c2URL}/environments/${ip}/${port}/installed`);
+                let response = await fetch(`${this.c2URL}/environments/${ip}/${port}/installed`);
                 switch (response.status) {
                     case 200:
                         this.installedPackages = await response.json();
@@ -162,39 +176,38 @@ export default {
                     case 404:
                     case 502:
                     case 504:
-                        alert((await response.json()).error);
+                        this.showErrorModal((await response.json()).error);
                         break;
                     default:
-                        alert(
+                        this.showErrorModal(
                             'Unexpected response from the Command an Control server when trying '
                             + "to recover the selected environment's installed tests."
                         );
                 }    
             } catch (err) {
-                alert(
+                this.showErrorModal(
                     "Something went wrong when trying to recover the environment's installed "
-                    + 'tests.'
+                    + 'tests. Please, verify that the application is correctly configured.'
                 );
             }
         },
 
         async setPlatformInformation(ip, port) {
-            var response;
             try {
-                response = await fetch(`${this.c2URL}/environments/${ip}/${port}/info`);
+                let response = await fetch(`${this.c2URL}/environments/${ip}/${port}/info`);
                 if (response.status == 200)
                     this.envPlatform = await response.json();
                 else if (response.status == 404) {
-                    alert((await response.json()).error);
+                    this.showErrorModal((await response.json()).error);
                 } else
-                    alert(
+                    this.showErrorModal(
                         'Unexpected response from the Command an Control server when trying to '
                         + "recover the selected environment's platform information."
                     );
             } catch (err) {
-                alert(
+                this.showErrorModal(
                     "Something went wrong when trying to recover the environment's platform "
-                    + 'information.'
+                    + 'information. Please, verify that the application is correctly configured.'
                 );
             }
         },
@@ -204,6 +217,12 @@ export default {
                 alert((await response.json()).error);
             else
                 alert('Unexpected response from Command and Control server.');
+        },
+
+        removePackages(deletedPackages) {
+            this.installedPackages = this.installedPackages.filter(
+                pack => !deletedPackages.has(pack.name)
+            );
         },
 
         setReports(reports) {
@@ -247,6 +266,11 @@ export default {
 .clickable:hover {
     color: grey;
     cursor: pointer;
+}
+
+.overflowable {
+    height: 100vh;
+    overflow: auto;
 }
 
 @media (min-width: 576px) {

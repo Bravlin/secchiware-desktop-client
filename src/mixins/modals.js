@@ -16,6 +16,26 @@ export default {
                 headerTextVariant: 'light',
                 okVariant: 'dark'
             });
+        },
+
+        showWarningModal(message) {
+            this.$bvModal.msgBoxOk(message, {
+                title: 'Warning',
+                headerBgVariant: 'warning',
+                headerTextVariant: 'light',
+                okVariant: 'dark'
+            });
+        },
+
+        showDangerousOperationConfirmationModal(message, okTitle) {
+            return this.$bvModal.msgBoxConfirm(message, {
+                title: 'Confirmation',
+                headerBgVariant: 'dark',
+                headerTextVariant: 'light',
+                okVariant: 'danger',
+                okTitle: okTitle,
+                centered: true
+            });
         }
     }
 };

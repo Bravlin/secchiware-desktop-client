@@ -3,7 +3,10 @@
         <b-form @submit.prevent="handleSubmit">
             <b-row>
                 <b-col class="black-background py-3" cols="6">
-                    <h5>Available packages</h5>
+                    <h5>
+                        Available packages
+                        <b-icon-arrow-repeat class="clickable" @click="refreshAvailablePackages" />
+                    </h5>
                     <b-form-checkbox-group
                         id="install-packages-checkbox"
                         v-model="selected"
@@ -13,10 +16,14 @@
                     />
                 </b-col>
                 <b-col cols="6" class="text-center py-3">
-                    <b-alert v-model="error" variant="danger" dismissible>
-                        {{ this.errorMessage }}
-                    </b-alert>
-                    <b-button type="submit" variant="dark" class="mt-1">Install</b-button>
+                    <b-button
+                        type="submit"
+                        variant="dark"
+                        class="mt-1"
+                        :disabled="this.selected.length === 0"
+                    >
+                        Install
+                    </b-button>
                 </b-col>
             </b-row>
         </b-form>
@@ -24,17 +31,18 @@
 </template>
 
 <script>
-import Vue from 'vue';
-const crypto = require('crypto');
+import modals from '../../../mixins/modals.js';
+import crypto from 'crypto';
+import signatures from '../../../scripts/signatures.js';
 
 export default {
     name: 'install-packages-form',
 
+    mixins: [modals],
+
     data() {
         return {
             selected: [],
-            error: false,
-            errorMessage: ''
         };
     },
 
@@ -62,16 +70,16 @@ export default {
     },
 
     methods: {
+        refreshAvailablePackages() {
+            this.$emit('refreshAvailablePackagesRequested');
+        },
+
         async handleSubmit() {
-            const canonicalURL = `/environments/${this.envIP}/${this.envPort}/installed`
-            var preparedRequest, actualRequest, hasher, digest, signature;
-
-            this.clearStatus();
-
-            if (this.invalidSelection) {
-                this.error = true;
-                this.errorMessage = 'You must select at least one package.';
-            } else {
+            if (this.selected.length === 0)
+                this.showErrorModal('You must select at least one package.');
+            else {
+                const canonicalURL = `/environments/${this.envIP}/${this.envPort}/installed`;
+                let preparedRequest, actualRequest, hasher, digest, signature;
                 preparedRequest = new Request (
                     this.c2URL + canonicalURL,
                     {
@@ -87,7 +95,7 @@ export default {
                 digest = hasher.digest('base64');
                 actualRequest.headers.append('Digest', `sha-256=${digest}`);
 
-                signature = Vue.newSignature(
+                signature = signatures.newSignature(
                     this.c2Password,
                     preparedRequest.method,
                     canonicalURL,
@@ -98,7 +106,7 @@ export default {
                 );
                 actualRequest.headers.set(
                     'Authorization',
-                    Vue.newAuthorizationHeader('Client', signature, ['Digest'])
+                    signatures.newAuthorizationHeader('Client', signature, ['Digest'])
                 );
 
                 try {
@@ -106,7 +114,8 @@ export default {
                     switch (response.status) {
                         case 204:
                             this.$emit('packagesInstalled');
-                            alert('Packages installed!');
+                            this.showSuccessModal('Packages installed!');
+                            this.selected = [];
                             break;
                         case 400:
                         case 401:
@@ -115,22 +124,22 @@ export default {
                         case 500:
                         case 502:
                         case 504:
-                            alert((await response.json()).error);
+                            this.showErrorModal((await response.json()).error);
                             break;
                         default:
-                            alert('Unexpected response from Command and Control server.');
+                            this.showErrorModal(
+                                'Unexpected response from Command and Control server when trying '
+                                + 'to install some packages in the selected environment.'
+                            );
                     }
                 } catch (err) {
-                    alert(
-                        'Something went wrong trying to contact the Command and Control server.'
+                    this.showErrorModal(
+                        'Something went wrong trying to contact the Command and Control server '
+                        + 'when trying to install some packages in the selected environment. '
+                        + 'Please, verify that the application is correctly configured.'
                     );
                 }
             }
-        },
-
-        clearStatus() {
-            this.error = false;
-            this.errorMessage = '';
         }
     },
 
@@ -141,10 +150,6 @@ export default {
             for (p of this.c2AvailablePackages)
                 options.push({text: p.name, value: p.name});
             return options;
-        },
-
-        invalidSelection() {
-            return this.selected.length === 0;
         }
     }
 };
@@ -154,5 +159,10 @@ export default {
 .black-background {
     background-color: rgb(51, 51, 51);
     color: white;
+}
+
+.clickable:hover {
+    color: grey;
+    cursor: pointer;
 }
 </style>

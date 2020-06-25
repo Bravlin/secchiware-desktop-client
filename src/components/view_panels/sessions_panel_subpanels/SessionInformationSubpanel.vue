@@ -59,9 +59,12 @@
 import PlatformInformation from '../components/PlatformInformation.vue';
 import Reports from '../components/Reports.vue';
 import Vue from 'vue';
+import modals from '../../../mixins/modals.js';
 
 export default {
     name: 'session-information-subpanel',
+
+    mixins: [modals],
 
     components: {
         'platform-information': PlatformInformation,
@@ -139,14 +142,10 @@ export default {
         },
 
         async deleteSession() {
-            var proceed = await this.$bvModal.msgBoxConfirm(
+            var proceed = await this.showDangerousOperationConfirmationModal(
                 'Deleting a session will remove all its associated information and executions. '
                 + 'Are you sure you want to continue?',
-                {
-                    okVariant: 'danger',
-                    okTitle: 'Delete',
-                    centered: true
-                }
+                'Delete'
             );
             if (proceed) {
                 let requestInit, canonicalURI, signature;
@@ -189,14 +188,10 @@ export default {
         },
 
         async deleteExecution(executionID) {
-            var proceed = await this.$bvModal.msgBoxConfirm(
+            var proceed = await this.showDangerousOperationConfirmationModal(
                 'Deleting an execution will remove all its associated information and reports. '
                 + 'Are you sure you want to continue?',
-                {
-                    okVariant: 'danger',
-                    okTitle: 'Delete',
-                    centered: true
-                }
+                'Delete'
             );
             if (proceed) {
                 let requestInit, canonicalURI, signature;

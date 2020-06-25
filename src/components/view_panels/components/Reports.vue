@@ -94,16 +94,4 @@ export default {
     background-color: rgb(51, 51, 51);
     color: white;
 }
-
-.successful-test {
-    color: green;
-}
-
-.indeterminate-test {
-    color: orange;
-}
-
-.failed-test {
-    color: red;
-}
 </style>

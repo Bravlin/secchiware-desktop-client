@@ -20,9 +20,9 @@
 </template>
 
 <script>
-import modals from '../../../mixins/modals.js'
+import modals from '../../../mixins/modals.js';
 import crypto from 'crypto';
-import signatures from '../../../scripts/signatures.js'
+import signatures from '../../../scripts/signatures.js';
 
 export default {
     name: 'upload-packages-form',

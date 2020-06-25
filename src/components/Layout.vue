@@ -140,6 +140,8 @@ export default {
                         packagesDeleted: this.removePackages,
                         newC2Configuration: this.propagateNewC2Configuration
                     };
+                case 'environments-panel':
+                    return {packagesRefreshRequested: this.setAvailablePackages};
                 default:
                     return null;
             }

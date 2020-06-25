@@ -187,8 +187,12 @@
 </template>
 
 <script>
+import modals from '../../../mixins/modals.js';
+
 export default {
     name: 'sessions-search-subpanel',
+
+    mixins: [modals],
 
     props: {
         c2URL: {
@@ -258,19 +262,24 @@ export default {
                     case 200:
                         this.searchResults = await response.json();
                         if (this.searchResults.length == 0)
-                            alert('No session matching the given criteria was found!');
+                            this.showWarningModal(
+                                'No session matching the given criteria was found!'
+                            );
                         break;
                     case 400:
-                        alert((await response.json()).error);
+                        this.showErrorModal((await response.json()).error);
                         break;
                     default:
-                        alert(
+                        this.showErrorModal(
                             'Unexpected response from Command and Control server when trying to '
                             + 'find sessions.'
                         );
                 }
             } catch(err) {
-                alert('Something went wrong trying to search for sessions.');
+                this.showErrorModal(
+                    'Something went wrong trying to search for sessions. Please, verify that the '
+                    + 'application is correctly configured.'
+                );
             }
         },
 

@@ -2,12 +2,20 @@
     <b-container fluid>
         <b-row class="mt-3">
             <b-button variant="dark" @click="execute">Execute all</b-button>
-            <b-button variant="outline-dark" class="ml-3" @click="executeSelection">
+            <b-button
+                variant="outline-dark"
+                class="ml-3"
+                @click="executeSelection"
+                :disabled="selectedPackages.length === 0 && selectedModules.length === 0 && selectedTestSets.length === 0"
+            >
                 Execute selected
             </b-button>
         </b-row>
         <b-row class="mt-3">
-            <h5>Root packages</h5>
+            <h5>
+                Root packages
+                <b-icon-arrow-repeat class="clickable" @click="refreshPackages" />
+            </h5>
         </b-row>
         <b-row v-for="p of installedPackages" :key="p.name">
             <package-content-selector
@@ -29,9 +37,12 @@
 
 <script>
 import PackageContentSelector from './tests_selector/PackageContentSelector';
+import modals from '../../../mixins/modals.js';
 
 export default {
     name: 'execute-tests',
+
+    mixins: [modals],
 
     components: {
         'package-content-selector': PackageContentSelector
@@ -77,6 +88,10 @@ export default {
     },
 
     methods: {
+        refreshPackages() {
+            this.$emit('refreshPackagesRequested');
+        },
+
         addPackage(pName) {
             const f = e => !e.startsWith(`${pName}.`);
             this.selectedPackages = this.selectedPackages.filter(f);
@@ -139,26 +154,35 @@ export default {
                 switch (response.status) {
                     case 200:
                         this.$emit('reportsRecovered', await response.json());
+                        this.showSuccessModal('Execution finished!');
                         break;
                     case 400:
                     case 404:
                     case 500:
                     case 502:
                     case 504:
-                        alert((await response.json()).error);
+                        this.showErrorModal((await response.json()).error);
                         break;
                     default:
-                        alert(
+                        this.showErrorModal(
                             'Unexpected response from Command and Control server when trying to '
                             + 'get some reports from the requested environment.'
                         );
                 }
             } catch (err) {
-                alert(
-                    "Something went wrong when trying to get the requested environment's reports."
+                this.showErrorModal(
+                    "Something went wrong when trying to get the requested environment's "
+                    + 'reports. Please, verify that the application is correctly configured.'
                 );
             }
         }
     }
 };
 </script>
+
+<style scoped>
+.clickable:hover {
+    color: grey;
+    cursor: pointer;
+}
+</style>
