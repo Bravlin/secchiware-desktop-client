@@ -36,9 +36,12 @@
 import CommandControlPanel from './view_panels/CommandControlPanel.vue';
 import EnvironmentsPanel from './view_panels/EnvironmentsPanel.vue';
 import SessionsPanel from './view_panels/SessionsPanel';
+import modals from '../mixins/modals.js';
 
 export default {
     name: 'layout',
+
+    mixins: [modals],
 
     components: {
         'command-control-panel': CommandControlPanel,
@@ -73,14 +76,14 @@ export default {
             try {
                 let response = await fetch(`${this.c2URL}/test_sets`);
                 if (response.status != 200)
-                    this.$bvModal.msgBoxOk(
+                    this.showErrorModal(
                         'Unexpected response from the Command an Control server when trying to '
                         + 'recover its available tests.'
                     );
                 else
                     this.availablePackages = await response.json();
             } catch (err) {
-                this.$bvModal.msgBoxOk(
+                this.showErrorModal(
                     'Something went wrong when trying to recover the tests available at the '
                     + 'Command and Control server. Please, verify that the application is '
                     + 'correctly configured.'
@@ -92,11 +95,6 @@ export default {
             this.availablePackages = this.availablePackages.filter(
                 pack => !deletedPackages.has(pack.name)
             );
-        },
-
-        newC2URL(c2URL) {
-            this.c2URL = c2URL;
-            this.setAvailablePackages();
         },
 
         propagateNewC2Configuration(c2URL, c2Password) {
@@ -134,6 +132,12 @@ export default {
                 default:
                     return null;
             }
+        }
+    },
+
+    watch: {
+        c2URL: async function () {
+            this.setAvailablePackages();
         }
     },
 
