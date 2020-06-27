@@ -6,7 +6,7 @@
             :c2Password="c2Password"
             @newC2Configuration="setC2Configuration"
         />
-        <welcome v-else @newC2ConfigurationProvided="setC2Configuration" />
+        <welcome v-else @newC2Configuration="setC2Configuration" />
     </div>
 </template>
 

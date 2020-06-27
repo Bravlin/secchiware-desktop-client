@@ -6,7 +6,7 @@
                 v-if="environments"
                 class="py-3 overflowable"
                 cols="5"
-                md="3"
+                md="4"
                 lg="3"
                 xl="2"
             >
@@ -20,74 +20,83 @@
                     stacked
                 />
             </b-col>
-            <b-col cols="7" md="9" lg="9" xl="10" class="p-5 overflowable">
-                <b-card-group columns>
-                    <b-card
-                        title="Environment information"
-                        align="left"
-                        v-if="selectedEnv && envPlatform"
-                    >
-                        <div>IP: {{ selectedEnv.ip }}</div>
-                        <div class="mt-3">Port: {{ selectedEnv.port }}</div>
-                        <div class="mt-3">Session ID: {{ selectedEnv.session_id }}</div>
-                        <div class="my-3">Session start: {{ selectedEnv.session_start }}</div>
-                        <platform-information :platform="envPlatform" :verticalMarginBetween="3" />
-                    </b-card>
-                    <b-card v-if="selectedEnv" title="Tests management" align="left">
-                        <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
-                            <b-tab title="Explore" title-link-class="text-light" active>
-                                <test-packages
-                                    v-if="installedPackages"
-                                    :packages="installedPackages" 
-                                    @packagesRefreshRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
-                                />
-                            </b-tab>
-                            <b-tab title="Install" title-link-class="text-light">
-                                <install-packages-form
-                                    :c2URL="c2URL"
-                                    :c2Password="c2Password"
-                                    :c2AvailablePackages="availablePackages"
-                                    :envIP="selectedEnv.ip"
-                                    :envPort="selectedEnv.port"
-                                    @refreshAvailablePackagesRequested="propagateAvailablePackagesRefreshRequested"
-                                    @packagesInstalled="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
-                                />
-                            </b-tab>
-                            <b-tab title="Uninstall" title-link-class="text-light">
-                                <delete-packages-form
-                                    :packages="installedPackages"
-                                    :c2URL="c2URL"
-                                    :c2Password="c2Password"
-                                    :baseEndpoint="`/environments/${selectedEnv.ip}/${selectedEnv.port}/installed`"
-                                    @error="uninstallPackageError"
-                                    @packagesDeleted="removePackages"
-                                    @packagesRefreshRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
-                                />
-                            </b-tab>
-                        </b-tabs>
-                    </b-card>
-                    <b-card v-if="selectedEnv"  title="Execute tests" align="left">
-                        <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
-                            <b-tab title="Select tests" title-link-class="text-light" active>
-                                <execute-tests
-                                    :c2URL="c2URL"
-                                    :ip="selectedEnv.ip"
-                                    :port="selectedEnv.port"
-                                    :installedPackages="installedPackages"
-                                    @reportsRecovered="setReports"
-                                    @refreshPackagesRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
-                                />
-                            </b-tab>
-                            <b-tab
-                                v-if="reports"
-                                title="Reports"
-                                title-link-class="text-light"
-                            >
-                                <reports :reports="reports" />
-                            </b-tab>
-                        </b-tabs>
-                    </b-card>
-                </b-card-group>
+            <b-col cols="7" md="8" lg="9" xl="10" class="p-5 overflowable">
+                <b-card
+                    title="Environment information"
+                    align="left"
+                    v-if="selectedEnv && envPlatform"
+                    class="environments-panel-b-card mx-auto"
+                >
+                    <div>IP: {{ selectedEnv.ip }}</div>
+                    <div class="mt-3">Port: {{ selectedEnv.port }}</div>
+                    <div class="mt-3">Session ID: {{ selectedEnv.session_id }}</div>
+                    <div class="my-3">Session start: {{ selectedEnv.session_start }}</div>
+                    <platform-information :platform="envPlatform" :verticalMarginBetween="3" />
+                </b-card>
+                <b-card
+                    v-if="selectedEnv"
+                    title="Tests management"
+                    align="left"
+                    class="environments-panel-b-card mx-auto mt-5"
+                >
+                    <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                        <b-tab title="Explore" title-link-class="text-light" active>
+                            <test-packages
+                                v-if="installedPackages"
+                                :packages="installedPackages" 
+                                @packagesRefreshRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                            />
+                        </b-tab>
+                        <b-tab title="Install" title-link-class="text-light">
+                            <install-packages-form
+                                :c2URL="c2URL"
+                                :c2Password="c2Password"
+                                :c2AvailablePackages="availablePackages"
+                                :envIP="selectedEnv.ip"
+                                :envPort="selectedEnv.port"
+                                @refreshAvailablePackagesRequested="propagateAvailablePackagesRefreshRequested"
+                                @packagesInstalled="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                            />
+                        </b-tab>
+                        <b-tab title="Uninstall" title-link-class="text-light">
+                            <delete-packages-form
+                                :packages="installedPackages"
+                                :c2URL="c2URL"
+                                :c2Password="c2Password"
+                                :baseEndpoint="`/environments/${selectedEnv.ip}/${selectedEnv.port}/installed`"
+                                @error="uninstallPackageError"
+                                @packagesDeleted="removePackages"
+                                @packagesRefreshRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                            />
+                        </b-tab>
+                    </b-tabs>
+                </b-card>
+                <b-card
+                    v-if="selectedEnv"
+                    title="Execute tests"
+                    align="left"
+                    class="environments-panel-b-card mx-auto mt-5"
+                >
+                    <b-tabs pills active-nav-item-class="bg-secondary" nav-class="bg-dark">
+                        <b-tab title="Select tests" title-link-class="text-light" active>
+                            <execute-tests
+                                :c2URL="c2URL"
+                                :ip="selectedEnv.ip"
+                                :port="selectedEnv.port"
+                                :installedPackages="installedPackages"
+                                @reportsRecovered="setReports"
+                                @refreshPackagesRequested="setInstalledPackages(selectedEnv.ip, selectedEnv.port)"
+                            />
+                        </b-tab>
+                        <b-tab
+                            v-if="reports"
+                            title="Reports"
+                            title-link-class="text-light"
+                        >
+                            <reports :reports="reports" />
+                        </b-tab>
+                    </b-tabs>
+                </b-card>
             </b-col>
         </b-row>
     </b-container>
@@ -283,5 +292,9 @@ export default {
     .card-columns {
         column-count: 2;
     }
+}
+
+.environments-panel-b-card {
+    max-width: 800px;
 }
 </style>

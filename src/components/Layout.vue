@@ -21,13 +21,6 @@
             >
                 <b-icon-documents class="navbar-icon" />
             </div>
-            <div 
-                class="py-1 navbar-button mt-auto"
-                :class="{active: currentPanel == 'command-control-url-form'}"
-                @click="changePanel('command-control-url-form')"
-            >
-                <b-icon-gear-fill class="navbar-icon" />
-            </div>
         </div>
         <component
             :is="currentPanel"
@@ -43,7 +36,6 @@
 import CommandControlPanel from './view_panels/CommandControlPanel.vue';
 import EnvironmentsPanel from './view_panels/EnvironmentsPanel.vue';
 import SessionsPanel from './view_panels/SessionsPanel';
-import CommandControlURLForm from './CommandControlURLForm.vue';
 
 export default {
     name: 'layout',
@@ -52,7 +44,6 @@ export default {
         'command-control-panel': CommandControlPanel,
         'environments-panel': EnvironmentsPanel,
         'sessions-panel': SessionsPanel,
-        'command-control-url-form': CommandControlURLForm,
     },
 
     data() {
@@ -132,8 +123,6 @@ export default {
 
         panelEvents() {
             switch (this.currentPanel) {
-                case 'connection-form':
-                    return {connected: this.newConnection};
                 case 'command-control-panel':
                     return {
                         packagesRefreshRequested: this.setAvailablePackages,
