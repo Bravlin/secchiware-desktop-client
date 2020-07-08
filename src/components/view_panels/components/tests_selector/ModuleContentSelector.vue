@@ -13,16 +13,19 @@
                 {{ testSetsAction }} Test Sets
             </div>
             <template v-if="testSetsVisible">
-                <entity-selector
+                <test-set-content-selector
                     v-for="ts of mod.test_sets"
                     :key="`${path}.${ts.name}`"
-                    :selected="selectedTestSets"
-                    :value="`${path}.${ts.name}`"
-                    :text="ts.name"
+                    :testSet="ts"
+                    :selectedTestSets="selectedTestSets"
+                    :selectedTests="selectedTests"
+                    :modulePath="path"
                     :disabled="disabled || selectedModules.includes(path)"
-                    @addValue="addTestSet"
-                    @removeValue="removeTestSet"
-                    class="mt-1"
+                    @addTestSet="addTestSet"
+                    @removeTestSet="removeTestSet"
+                    @addTest="addTest"
+                    @removeTest="removeTest"
+                    class="mt-2"
                 />
             </template>
         </div>
@@ -31,18 +34,18 @@
 
 <script>
 import EntitySelector from './EntitySelector.vue';
+import TestSetContentSelector from './TestSetContentSelector.vue';
 
 export default {
     name: 'module-content-selector',
 
     components: {
-        'entity-selector': EntitySelector
+        'entity-selector': EntitySelector,
+        'test-set-content-selector': TestSetContentSelector
     },
 
     data() {
-        return {
-            testSetsAction: '+'
-        };
+        return {testSetsAction: '+'};
     },
 
     props: {
@@ -55,6 +58,10 @@ export default {
             required: true
         },
         selectedTestSets: {
+            type: Array,
+            required: true
+        },
+        selectedTests: {
             type: Array,
             required: true
         },
@@ -87,6 +94,14 @@ export default {
 
         removeTestSet(index) {
             this.$emit('removeTestSet', index);
+        },
+
+        addTest(testName) {
+            this.$emit('addTest', testName);
+        },
+
+        removeTest(index) {
+            this.$emit('removeTest', index);
         }
     },
 

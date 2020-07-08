@@ -17,12 +17,15 @@
                     :mod="m"
                     :selectedModules="selectedModules"
                     :selectedTestSets="selectedTestSets"
+                    :selectedTests="selectedTests"
                     :packagePath="path"
                     :disabled="disabled || selectedPackages.includes(path)"
                     @addModule="addModule"
                     @removeModule="removeModule"
                     @addTestSet="addTestSet"
                     @removeTestSet="removeTestSet"
+                    @addTest="addTest"
+                    @removeTest="removeTest"
                     class="mt-2"
                 />
             </template>
@@ -39,6 +42,7 @@
                     :selectedPackages="selectedPackages"
                     :selectedModules="selectedModules"
                     :selectedTestSets="selectedTestSets"
+                    :selectedTests="selectedTests"
                     :parentPath="path"
                     :disabled="disabled || selectedPackages.includes(path)"
                     @addPackage="addPackage"
@@ -47,7 +51,9 @@
                     @removeModule="removeModule"
                     @addTestSet="addTestSet"
                     @removeTestSet="removeTestSet"
-                    class="mt-1"
+                    @addTest="addTest"
+                    @removeTest="removeTest"
+                    class="mt-2"
                 />
             </template>
         </div>
@@ -87,6 +93,10 @@ export default {
             required: true
         },
         selectedTestSets: {
+            type: Array,
+            required: true
+        },
+        selectedTests: {
             type: Array,
             required: true
         },
@@ -131,6 +141,14 @@ export default {
 
         removeTestSet(index) {
             this.$emit('removeTestSet', index);
+        },
+
+        addTest(testName) {
+            this.$emit('addTest', testName);
+        },
+
+        removeTest(index) {
+            this.$emit('removeTest', index);
         }
     },
 

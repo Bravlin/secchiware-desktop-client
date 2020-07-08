@@ -6,7 +6,7 @@
                 variant="outline-dark"
                 class="ml-3"
                 @click="executeSelection"
-                :disabled="selectedPackages.length === 0 && selectedModules.length === 0 && selectedTestSets.length === 0"
+                :disabled="selectedPackages.length === 0 && selectedModules.length === 0 && selectedTestSets.length === 0 && selectedTests.length === 0"
             >
                 Execute selected
             </b-button>
@@ -23,12 +23,15 @@
                 :selectedPackages="selectedPackages"
                 :selectedModules="selectedModules"
                 :selectedTestSets="selectedTestSets"
+                :selectedTests="selectedTests"
                 @addPackage="addPackage"
                 @removePackage="removePackage"
                 @addModule="addModule"
                 @removeModule="removeModule"
                 @addTestSet="addTestSet"
                 @removeTestSet="removeTestSet"
+                @addTest="addTest"
+                @removeTest="removeTest"
                 class="mt-1"
             />
         </b-row>
@@ -52,7 +55,8 @@ export default {
         return {
             selectedPackages: [],
             selectedModules: [],
-            selectedTestSets: []
+            selectedTestSets: [],
+            selectedTests: []
         };
     },
 
@@ -81,6 +85,7 @@ export default {
                 this.selectedPackages = [];
                 this.selectedModules = [];
                 this.selectedTestSets = [];
+                this.selectedTests = [];
             },
             deep: true,
             immediate: true,
@@ -97,6 +102,7 @@ export default {
             this.selectedPackages = this.selectedPackages.filter(f);
             this.selectedModules = this.selectedModules.filter(f);
             this.selectedTestSets = this.selectedTestSets.filter(f);
+            this.selectedTests = this.selectedTests.filter(f);
             this.selectedPackages.push(pName);
         },
 
@@ -105,9 +111,9 @@ export default {
         },
 
         addModule(mName) {
-            this.selectedTestSets = this.selectedTestSets.filter(
-                ts => !ts.startsWith(`${mName}.`)
-            );
+            const f = e => !e.startsWith(`${mName}.`);
+            this.selectedTestSets = this.selectedTestSets.filter(f);
+            this.selectedTests = this.selectedTests.filter(f);
             this.selectedModules.push(mName);
         },
 
@@ -116,11 +122,22 @@ export default {
         },
 
         addTestSet(tSName) {
-            this.selectedTestSets.push(tSName)
+            this.selectedTests = this.selectedTests.filter(
+                t => !t.startsWith(`${tSName}.`)
+            );
+            this.selectedTestSets.push(tSName);
         },
 
         removeTestSet(index) {
             this.$delete(this.selectedTestSets, index);
+        },
+
+        addTest(testName) {
+            this.selectedTests.push(testName);
+        },
+
+        removeTest(index) {
+            this.$delete(this.selectedTests, index);
         },
 
         async executeSelection() {
@@ -128,11 +145,12 @@ export default {
                 packages: this.selectedPackages,
                 modules: this.selectedModules,
                 testSets: this.selectedTestSets,
+                tests: this.selectedTests
             }
             this.execute(selection);
         },
 
-        async execute({packages = null, modules = null, testSets = null} = {}) {
+        async execute({packages = null, modules = null, testSets = null, tests = null} = {}) {
             var query = '';
             var url = `${this.c2URL}/environments/${this.ip}/${this.port}/reports`;
 
@@ -142,6 +160,8 @@ export default {
                 query += '&modules=' + modules.join(',');
             if (testSets && testSets.length > 0)
                 query += '&test_sets=' + testSets.join(',');
+            if (tests && tests.length > 0)
+                query += '&tests=' + tests.join(',');
 
             if (query) {
                 if (query.startsWith('&'))

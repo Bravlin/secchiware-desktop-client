@@ -50,6 +50,12 @@ export default {
         }
     },
 
+    watch: {
+        reports: function () {
+            this.selected = null;
+        }
+    },
+
     methods: {
         correspondingTextColor(resultCode) {
             if (resultCode > 0)
